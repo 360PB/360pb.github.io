@@ -3,26 +3,41 @@ body {
     background-color: #fff;
     color: #333;
     padding: 20px;
-    margin: 0 auto; /* 居中显示 */
-    max-width: 800px; /* 设置页面最大宽度 */
+    margin: 0 auto;
+    max-width: 800px;
     box-sizing: border-box;
 }
 
+.filters {
+    margin-bottom: 20px;
+}
+
+.filters button {
+    margin-right: 10px;
+    padding: 5px 10px;
+    background-color: #f9f9f9f9;
+    border: 1px solid #ddd;
+    cursor: pointer;
+}
+
+.filters button.active {
+    background-color: #007bff;
+    color: white;
+}
+
 table {
-    width: 100%; /* 表格宽度自适应容器 */
+    width: 100%;
     border-collapse: collapse;
-    margin-top: 20px;
 }
 
 th, td {
     border: 1px solid #ddd;
     padding: 8px;
     text-align: left;
-    white-space: nowrap; /* 防止内容换行 */
 }
 
 th {
-    background-color: #f9f9f9;
+    background-color: #f9f9f9f9;
 }
 
 tr:hover {
@@ -41,7 +56,7 @@ tr:hover {
 .pagination button {
     margin: 0 5px;
     padding: 8px 12px;
-    background-color: #f9f9f9;
+    background-color: #f9f9f9f9;
     color: #333;
     border: 1px solid #ddd;
     cursor: pointer;
