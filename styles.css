@@ -8,10 +8,26 @@ body {
     box-sizing: border-box;
 }
 
+.filters {
+    margin-bottom: 20px;
+}
+
+.filters button {
+    margin-right: 10px;
+    padding: 5px 10px;
+    background-color: #f9f9f9f9;
+    border: 1px solid #ddd;
+    cursor: pointer;
+}
+
+.filters button.active {
+    background-color: #007bff;
+    color: white;
+}
+
 table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 20px;
 }
 
 th, td {
