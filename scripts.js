@@ -41,9 +41,18 @@ function handlePaginationClick(event) {
 function displayTable() {
     const resourceList = document.getElementById('resource-list');
     const fragment = document.createDocumentFragment();
+    let sortedData = filteredData;
+
+    // 默认按更新时间降序排序
+    if (!currentSort || currentSort === 'desc') {
+        sortedData.sort((a, b) => b.update_time - a.update_time);
+    } else if (currentSort === 'asc') {
+        sortedData.sort((a, b) => a.update_time - b.update_time);
+    }
+
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
-    const pageData = filteredData.slice(startIndex, endIndex);
+    const pageData = sortedData.slice(startIndex, endIndex);
 
     pageData.forEach(item => {
         const card = document.createElement('div');
@@ -62,6 +71,17 @@ function displayTable() {
     updatePagination();
 }
 
+// 添加排序功能
+let currentSort = 'desc'; // 默认降序
+
+function sortTable(ascending) {
+    currentSort = ascending ? 'asc' : 'desc';
+    filteredData.sort((a, b) => {
+        return ascending ? a.update_time - b.update_time : b.update_time - a.update_time;
+    });
+    currentPage = 1;
+    displayTable();
+}
 function searchTable() {
     const searchInput = document.getElementById('search-input').value.toLowerCase();
     filteredData = originalData.filter(item => item.title.toLowerCase().includes(searchInput));
@@ -107,6 +127,7 @@ function updateFilterButtons() {
     });
 }
 
+// 更新分页逻辑以保持最初的显示
 function updatePagination() {
     const pagination = document.getElementById('pagination');
     pagination.innerHTML = '';
