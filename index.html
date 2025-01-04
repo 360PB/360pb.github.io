@@ -4,9 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>夸克链接表格</title>
+    <title>短剧</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #1e1e1e;
+            color: #ffffff;
             padding: 20px;
             box-sizing: border-box;
         }
@@ -16,7 +19,7 @@
             table-layout: fixed;
         }
         th, td {
-            border: 1px solid #ddd;
+            border: 1px solid #444;
             padding: 8px;
             text-align: left;
             overflow: hidden;
@@ -24,7 +27,7 @@
             text-overflow: ellipsis;
         }
         th {
-            background-color: #f2f2f2;
+            background-color: #333;
             cursor: pointer;
         }
         th.resizable {
@@ -38,6 +41,7 @@
             bottom: 0;
             width: 10px;
             cursor: col-resize;
+            background: linear-gradient(to right, #333 0%, #333 100%);
         }
         .pagination {
             margin-top: 20px;
@@ -46,13 +50,18 @@
         .pagination button {
             margin: 0 5px;
             padding: 5px 10px;
+            background-color: #333;
+            color: #ffffff;
+            border: none;
             cursor: pointer;
+        }
+        .pagination .active {
+            background-color: #555;
         }
         @media (max-width: 600px) {
             th, td {
                 display: block;
                 width: 100%;
-                text-align: left;
             }
             th::after, td::after {
                 content: attr(data-label);
@@ -64,8 +73,8 @@
     </style>
 </head>
 <body>
-    <h1>夸克链接表格</h1>
-    <input type="text" id="search-input" placeholder="搜索文件名" oninput="searchTable()">
+    <h1>短剧</h1>
+    <input type="text" id="search-input" placeholder="搜索短剧" oninput="searchTable()">
     <button onclick="downloadData()">下载数据</button>
     <table id="data-table">
         <thead>
