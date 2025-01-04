@@ -59,35 +59,87 @@ function displayTable() {
     updatePagination();
 }
 
+// ... 其他函数 ...
+
 function updatePagination() {
     const pagination = document.getElementById('pagination');
-    pagination.innerHTML = '';
+     pagination.innerHTML = '';
 
     const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+    const maxButtons = 5; // 最多显示的页码按钮数量，包括当前页和其周围的页码
 
+    // 添加“上一页”按钮
     if (currentPage > 1) {
         const prevButton = document.createElement('button');
         prevButton.textContent = '上一页';
         prevButton.addEventListener('click', () => {
-            currentPage--;
+            currentPage = Math.max(1, currentPage - 1);
             displayTable();
         });
         pagination.appendChild(prevButton);
     }
 
-    for (let i = 1; i <= totalPages; i++) {
-        const button = document.createElement('button');
-        button.textContent = i;
-        button.addEventListener('click', () => {
+    // 添加页码按钮
+    if (currentPage > 1) { // 如果不是第一页，则显示页码 1
+        const page1Button = document.createElement('button');
+        page1Button.textContent = '1';
+        page1Button.addEventListener('click', () => {
+            currentPage = 1;
+            displayTable();
+        });
+        pagination.appendChild(page1Button);
+    }
+
+    // 计算并添加中间的省略号和页码按钮
+    const startRange = Math.max(2, currentPage - Math.floor((maxButtons - 1) / 2));
+    const endRange = Math.min(totalPages - 2, currentPage + Math.floor((maxButtons - 1) / 2));
+
+    for (let i = startRange; i <= endRange; i++) {
+        const pageButton = document.createElement('button');
+        pageButton.textContent = i;
+        pageButton.addEventListener('click', () => {
             currentPage = i;
             displayTable();
         });
         if (i === currentPage) {
-            button.classList.add('active');
+            pageButton.classList.add('active');
         }
-        pagination.appendChild(button);
+        pagination.appendChild(pageButton);
     }
 
+    // 如果当前页不是最后几页，则添加省略号和最后几页的页码按钮
+    if (currentPage < totalPages - 1) {
+        const ellipsisButton = document.createElement('button');
+        ellipsisButton.textContent = '...';
+        ellipsisButton.disabled = true; // 禁用省略号按钮
+        pagination.appendChild(ellipsisButton);
+
+        const pageLastMinus2Button = document.createElement('button');
+        pageLastMinus2Button.textContent = totalPages - 2;
+        pageLastMinus2Button.addEventListener('click', () => {
+            currentPage = totalPages - 2;
+            displayTable();
+        });
+        pagination.appendChild(pageLastMinus2Button);
+
+        const pageLastMinus1Button = document.createElement('button');
+        pageLastMinus1Button.textContent = totalPages - 1;
+        pageLastMinus1Button.addEventListener('click', () => {
+            currentPage = totalPages - 1;
+            displayTable();
+        });
+        pagination.appendChild(pageLastMinus1Button);
+
+        const pageLastButton = document.createElement('button');
+        pageLastButton.textContent = totalPages;
+        pageLastButton.addEventListener('click', () => {
+            currentPage = totalPages;
+            displayTable();
+        });
+        pagination.appendChild(pageLastButton);
+    }
+
+    // 添加“下一页”按钮
     if (currentPage < totalPages) {
         const nextButton = document.createElement('button');
         nextButton.textContent = '下一页';
@@ -98,6 +150,8 @@ function updatePagination() {
         pagination.appendChild(nextButton);
     }
 }
+
+// ... 其他函数 ...
 
 function searchTable() {
     const searchInput = document.getElementById('search-input').value.toLowerCase();
