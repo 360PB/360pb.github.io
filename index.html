@@ -3,79 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>短剧</title>
-    <style>
-        body {
-            font-family: 'Courier New', Courier, monospace;
-            background: linear-gradient(to bottom, #ffcc00, #ff9900);
-            color: #ffffff;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-        a {
-            font-size: 20px;
-            text-decoration: none;
-            padding: 10px 15px;
-            margin: -3px;
-        }
-        a:link, a:visited {
-            background-color: lightgrey;
-            color: red;
-        }
-        a:hover {
-            background-color: brown;
-            color: white;
-        }
-        a:active {
-            font-weight: 700;
-            color: lawngreen;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            border: 1px solid #444;
-            padding: 8px;
-            text-align: left;
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-        }
-        th {
-            background-color: #333;
-        }
-        tr:hover {
-            background-color: #f5f5f5;
-        }
-        .pagination {
-            margin-top: 20px;
-            text-align: center;
-        }
-        .pagination button {
-            margin: 0 5px;
-            padding: 5px 10px;
-            background-color: #333;
-            color: #ffffff;
-            border: none;
-            cursor: pointer;
-        }
-        .pagination .active {
-            background-color: #555;
-        }
-    </style>
+    <title>短剧资源库</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>短剧</h1>
+    <h1>短剧资源库</h1>
     <input type="text" id="search-input" placeholder="搜索短剧" oninput="searchTable()">
     <button onclick="downloadData()">下载数据</button>
     <table id="data-table">
         <thead>
             <tr>
-                <th class="resizable" data-label="序号">序号</th>
-                <th class="resizable" data-label="文件名">文件名</th>
-                <th class="resizable" data-label="夸克链接">夸克链接</th>
+                <th>序号</th>
+                <th>文件名</th>
+                <th>夸克链接</th>
             </tr>
         </thead>
         <tbody id="table-body">
@@ -84,109 +24,6 @@
     <div class="pagination" id="pagination">
     </div>
 
-    <script>
-        const itemsPerPage = 10;
-        let currentPage = 1;
-        let originalData = [];
-        let filteredData = [];
-
-        document.addEventListener('DOMContentLoaded', () => {
-            fetchDataAndDisplay();
-            setupEventListeners();
-        });
-
-        async function fetchDataAndDisplay() {
-            try {
-                const response = await fetch('qf_source.json');
-                if (!response.ok) {
-                    throw new Error('网络响应错误');
-                }
-                const data = await response.json();
-                const tableData = data.find(item => item.type === 'table' && item.name === 'qf_source');
-                originalData = tableData.data;
-                filteredData = [...originalData];
-                displayTable();
-            } catch (error) {
-                console.error('获取数据时发生错误:', error);
-            }
-        }
-
-        function setupEventListeners() {
-            document.getElementById('search-input').addEventListener('input', searchTable);
-            document.getElementById('download-button').addEventListener('click', downloadData);
-            document.querySelector('.pagination').addEventListener('click', handlePaginationClick);
-        }
-
-        function handlePaginationClick(event) {
-            if (event.target.tagName === 'BUTTON') {
-                currentPage = parseInt(event.target.textContent);
-                displayTable();
-            }
-        }
-
-        function displayTable() {
-            const tableBody = document.getElementById('table-body');
-            const fragment = document.createDocumentFragment();
-            const startIndex = (currentPage - 1) * itemsPerPage;
-            const endIndex = startIndex + itemsPerPage;
-            const pageData = filteredData.slice(startIndex, endIndex);
-
-            pageData.forEach(item => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${item.source_id}</td>
-                    <td>${item.title}</td>
-                    <td><a href="${item.url}" target="_blank">${item.url}</a></td>
-                `;
-                fragment.appendChild(row);
-            });
-
-            tableBody.innerHTML = '';
-            tableBody.appendChild(fragment);
-            updatePagination();
-        }
-
-        function updatePagination() {
-            const pagination = document.getElementById('pagination');
-            pagination.innerHTML = '';
-
-            const totalPages = Math.ceil(filteredData.length / itemsPerPage);
-            for (let i = 1; i <= totalPages; i++) {
-                const button = document.createElement('button');
-                button.textContent = i;
-                button.addEventListener('click', () => {
-                    currentPage = i;
-                    displayTable();
-                });
-                if (i === currentPage) {
-                    button.classList.add('active');
-                }
-                pagination.appendChild(button);
-            }
-        }
-
-        function searchTable() {
-            const searchInput = document.getElementById('search-input').value.toLowerCase();
-            filteredData = originalData.filter(item => item.title.toLowerCase().includes(searchInput));
-            currentPage = 1;
-            displayTable();
-        }
-
-        function downloadData() {
-            const dataToDownload = filteredData.map(item => ({
-                source_id: item.source_id,
-                title: item.title,
-                url: item.url
-            }));
-
-            const blob = new Blob([JSON.stringify(dataToDownload, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'filtered_data.json';
-            a.click();
-            URL.revokeObjectURL(url);
-        }
-    </script>
+    <script src="scripts.js"></script>
 </body>
 </html>
