@@ -3,22 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PanHub</title>
+    <title>资源库</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="filters">
-        <h1>资源库</h1>
-		<h2>数据源: <a href="https://panhub.fun/" target="_blank">https://panhub.fun/</a></h2>
-        <div class="filter-categories">
-            <button onclick="filterSelection('all')">全部</button>
-            <button onclick="filterSelection('1')">短剧</button>
-            <button onclick="filterSelection('2')">学习资料</button>
-            <button onclick="filterSelection('3')">游戏</button>
-            <button onclick="filterSelection('4')">软件</button>
-            <button onclick="filterSelection('5')">综合</button>
-        </div>
-    </div>
+    <h1>资源库</h1>
+    <h2>数据源: <a href="https://panhub.fun/" target="_blank">https://panhub.fun/</a></h2>
+    <p id="update-time">更新时间: 待加载...</p>
+	<div class="filters">
+		<button onclick="filterSelection('all')">全部</button>
+		<button onclick="filterSelection('1')">短剧</button>
+		<button onclick="filterSelection('11')">学习资料</button>
+		<button onclick="filterSelection('8')">游戏</button>
+		<button onclick="filterSelection('9')">软件</button>
+		<button onclick="filterSelection('7')">综合</button>
+	</div>
     <input type="text" id="search-input" placeholder="搜索资源" oninput="searchTable()">
     <button onclick="downloadData()">下载数据</button>
     <div id="resource-list" class="resource-list">
