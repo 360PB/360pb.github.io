@@ -1,4 +1,4 @@
-const itemsPerPage = 10;
+const itemsPerPage = 14;
 let currentPage = 1;
 let originalData = [];
 let filteredData = [];
@@ -60,12 +60,15 @@ function displayTable() {
     updatePagination();
 }
 
+// ... 其他函数 ...
+
 function updatePagination() {
     const pagination = document.getElementById('pagination');
     pagination.innerHTML = '';
 
     const totalPages = Math.ceil(filteredData.length / itemsPerPage);
 
+    // 添加“上一页”按钮
     if (currentPage > 1) {
         const prevButton = document.createElement('button');
         prevButton.textContent = '上一页';
@@ -76,19 +79,26 @@ function updatePagination() {
         pagination.appendChild(prevButton);
     }
 
-    for (let i = 1; i <= totalPages; i++) {
-        const button = document.createElement('button');
-        button.textContent = i;
-        button.addEventListener('click', () => {
+    // 计算页码范围
+    const maxButtons = 5; // 最多显示的页码按钮数量
+    const startPage = Math.max(1, currentPage - Math.floor((maxButtons - 3) / 2));
+    const endPage = Math.min(totalPages, startPage + maxButtons - 2);
+
+    // 添加页码按钮
+    for (let i = startPage; i <= endPage; i++) {
+        const pageButton = document.createElement('button');
+        pageButton.textContent = i;
+        pageButton.addEventListener('click', () => {
             currentPage = i;
             displayTable();
         });
         if (i === currentPage) {
-            button.classList.add('active');
+            pageButton.classList.add('active');
         }
-        pagination.appendChild(button);
+        pagination.appendChild(pageButton);
     }
 
+    // 添加“下一页”按钮
     if (currentPage < totalPages) {
         const nextButton = document.createElement('button');
         nextButton.textContent = '下一页';
@@ -99,6 +109,8 @@ function updatePagination() {
         pagination.appendChild(nextButton);
     }
 }
+
+// ... 其他函数 ...
 
 function searchTable() {
     const searchInput = document.getElementById('search-input').value.toLowerCase();
