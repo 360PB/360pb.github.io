@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>夸克链接表格</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>夸克链接表格</h1>
+    <table id="data-table">
+        <tr>
+            <th>序号</th>
+            <th>文件名</th>
+            <th>夸克链接</th>
+        </tr>
+    </table>
+
+    <script>
+        // 读取 JSON 文件并生成表格
+        fetch('qf_source.json')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('网络响应错误');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // 获取表格元素
+                const table = document.getElementById("data-table");
+
+                // 查找包含数据的表格对象
+                const tableData = data.find(item => item.type === 'table' && item.name === 'qf_source');
+
+                if (tableData && tableData.data) {
+                    // 动态生成表格行
+                    tableData.data.forEach(item => {
+                        const row = table.insertRow();
+                        const cell1 = row.insertCell(0);
+                        const cell2 = row.insertCell(1);
+                        const cell3 = row.insertCell(2);
+                        cell1.innerHTML = item.source_id;
+                        cell2.innerHTML = item.title;
+                        cell3.innerHTML = `<a href="${item.url}" target="_blank">${item.url}</a>`;
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('获取数据时发生错误:', error);
+            });
+    </script>
+</body>
+</html>
