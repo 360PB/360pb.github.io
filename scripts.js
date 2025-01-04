@@ -1,4 +1,4 @@
-const itemsPerPage = 10;
+const itemsPerPage = 14;
 let currentPage = 1;
 let originalData = [];
 let filteredData = [];
@@ -64,37 +64,38 @@ function updatePagination() {
     pagination.innerHTML = '';
 
     const totalPages = Math.ceil(filteredData.length / itemsPerPage);
-    const maxButtons = 5; // 显示的页码按钮数量
-    const range = Math.floor(maxButtons / 2) - 1; // 页码范围
 
-    if (totalPages > maxButtons) {
-        for (let i = 1; i <= totalPages; i++) {
-            if (i === 1 || i === totalPages || (i > currentPage - range && i < currentPage + range)) {
-                const button = document.createElement('button');
-                button.textContent = i;
-                button.addEventListener('click', () => {
-                    currentPage = i;
-                    displayTable();
-                });
-                if (i === currentPage) {
-                    button.classList.add('active');
-                }
-                pagination.appendChild(button);
-            }
+    if (currentPage > 1) {
+        const prevButton = document.createElement('button');
+        prevButton.textContent = '上一页';
+        prevButton.addEventListener('click', () => {
+            currentPage--;
+            displayTable();
+        });
+        pagination.appendChild(prevButton);
+    }
+
+    for (let i = 1; i <= totalPages; i++) {
+        const button = document.createElement('button');
+        button.textContent = i;
+        button.addEventListener('click', () => {
+            currentPage = i;
+            displayTable();
+        });
+        if (i === currentPage) {
+            button.classList.add('active');
         }
-    } else {
-        for (let i = 1; i <= totalPages; i++) {
-            const button = document.createElement('button');
-            button.textContent = i;
-            button.addEventListener('click', () => {
-                currentPage = i;
-                displayTable();
-            });
-            if (i === currentPage) {
-                button.classList.add('active');
-            }
-            pagination.appendChild(button);
-        }
+        pagination.appendChild(button);
+    }
+
+    if (currentPage < totalPages) {
+        const nextButton = document.createElement('button');
+        nextButton.textContent = '下一页';
+        nextButton.addEventListener('click', () => {
+            currentPage++;
+            displayTable();
+        });
+        pagination.appendChild(nextButton);
     }
 }
 
