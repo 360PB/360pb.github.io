@@ -90,18 +90,32 @@ function searchTable() {
 }
 
 function downloadData() {
-    const dataToDownload = filteredData.map(item => ({
-        source_id: item.source_id,
-        title: item.title,
-        url: item.url
-    }));
+    // 定义CSV列标题
+    const columns = ['序号', '文件名', '夸克链接', '更新时间'];
+    // 将列标题转换为CSV格式
+    const csvData = [columns.join(',')];
 
-    const blob = new Blob([JSON.stringify(dataToDownload, null, 2)], { type: 'application/json' });
+    // 将数据添加到CSV
+    filteredData.forEach((item, index) => {
+        const updateTime = new Date(item.update_time * 1000).toLocaleString();
+        const rowData = [
+            index + 1, // 序号从1开始
+            item.title,
+            item.url,
+            updateTime
+        ].join(',');
+        csvData.push(rowData);
+    });
+
+    // 创建CSV文件并下载
+    const blob = new Blob([csvData.join('\n')], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'panhub.fun_filtered_data.json';
-    a.click();
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'resource_data-panhub.fun.csv';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
     URL.revokeObjectURL(url);
 }
 
@@ -111,7 +125,7 @@ function downloadLinks() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'panhub.fun_download_links.txt';
+    a.download = 'download_links-panhub.fun.txt';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
