@@ -1,4 +1,4 @@
-const itemsPerPage = 14;
+const itemsPerPage = 10;
 let currentPage = 1;
 let originalData = [];
 let filteredData = [];
@@ -29,28 +29,6 @@ function setupEventListeners() {
     document.getElementById('search-input').addEventListener('input', searchTable);
     document.getElementById('download-button').addEventListener('click', downloadData);
     document.querySelector('.pagination').addEventListener('click', handlePaginationClick);
-}
-
-function filterSelection(filter) {
-    currentFilter = filter;
-    if (filter === 'all') {
-        filteredData = [...originalData];
-    } else {
-        filteredData = originalData.filter(item => item.source_category_id === filter);
-    }
-    currentPage = 1;
-    displayTable();
-    updateFilterButtons();
-}
-
-function updateFilterButtons() {
-    const filters = document.querySelectorAll('.filters button');
-    filters.forEach(filter => {
-        filter.classList.remove('active');
-        if (filter.textContent === currentFilter) {
-            filter.classList.add('active');
-        }
-    });
 }
 
 function handlePaginationClick(event) {
@@ -84,7 +62,7 @@ function displayTable() {
 
 function updatePagination() {
     const pagination = document.getElementById('pagination');
-     pagination.innerHTML = '';
+    pagination.innerHTML = '';
 
     const totalPages = Math.ceil(filteredData.length / itemsPerPage);
 
@@ -143,4 +121,26 @@ function downloadData() {
     a.download = 'filtered_data.json';
     a.click();
     URL.revokeObjectURL(url);
+}
+
+function filterSelection(filter) {
+    currentFilter = filter;
+    if (filter === 'all') {
+        filteredData = [...originalData];
+    } else {
+        filteredData = originalData.filter(item => item.source_category_id.toString() === filter);
+    }
+    currentPage = 1;
+    displayTable();
+    updateFilterButtons();
+}
+
+function updateFilterButtons() {
+    const filters = document.querySelectorAll('.filters button');
+    filters.forEach(filter => {
+        filter.classList.remove('active');
+        if (filter.textContent === currentFilter) {
+            filter.classList.add('active');
+        }
+    });
 }
