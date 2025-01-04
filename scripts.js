@@ -79,23 +79,44 @@ function updatePagination() {
         pagination.appendChild(prevButton);
     }
 
-    // 计算页码范围
-    const maxButtons = 5; // 最多显示的页码按钮数量
-    const startPage = Math.max(1, currentPage - Math.floor((maxButtons - 3) / 2));
-    const endPage = Math.min(totalPages, startPage + maxButtons - 2);
-
     // 添加页码按钮
-    for (let i = startPage; i <= endPage; i++) {
-        const pageButton = document.createElement('button');
-        pageButton.textContent = i;
-        pageButton.addEventListener('click', () => {
-            currentPage = i;
+    if (totalPages > 5) { // 如果总页数超过5页，则显示最后三页
+        const lastMinus2Button = document.createElement('button');
+        lastMinus2Button.textContent = totalPages - 2;
+        lastMinus2Button.addEventListener('click', () => {
+            currentPage = totalPages - 2;
             displayTable();
         });
-        if (i === currentPage) {
-            pageButton.classList.add('active');
+        pagination.appendChild(lastMinus2Button);
+
+        const lastMinus1Button = document.createElement('button');
+        lastMinus1Button.textContent = totalPages - 1;
+        lastMinus1Button.addEventListener('click', () => {
+            currentPage = totalPages - 1;
+            displayTable();
+        });
+        pagination.appendChild(lastMinus1Button);
+
+        const lastButton = document.createElement('button');
+        lastButton.textContent = totalPages;
+        lastButton.addEventListener('click', () => {
+            currentPage = totalPages;
+            displayTable();
+        });
+        pagination.appendChild(lastButton);
+    } else { // 如果总页数不超过5页，则显示所有页码
+        for (let i = 1; i <= totalPages; i++) {
+            const pageButton = document.createElement('button');
+            pageButton.textContent = i;
+            pageButton.addEventListener('click', () => {
+                currentPage = i;
+                displayTable();
+            });
+            if (i === currentPage) {
+                pageButton.classList.add('active');
+            }
+            pagination.appendChild(pageButton);
         }
-        pagination.appendChild(pageButton);
     }
 
     // 添加“下一页”按钮
