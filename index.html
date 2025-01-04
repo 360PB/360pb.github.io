@@ -2,26 +2,64 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>短剧列表</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>夸克链接表格</title>
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            box-sizing: border-box;
+        }
         table {
             width: 100%;
             border-collapse: collapse;
+            table-layout: fixed;
         }
         th, td {
-            border: 1px solid black;
+            border: 1px solid #ddd;
             padding: 8px;
             text-align: left;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
         }
         th {
             background-color: #f2f2f2;
+            cursor: pointer;
+        }
+        th.resizable {
+            position: relative;
+        }
+        th.resizable::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: -5px;
+            bottom: 0;
+            width: 10px;
+            cursor: col-resize;
         }
         .pagination {
             margin-top: 20px;
+            text-align: center;
         }
         .pagination button {
             margin: 0 5px;
             padding: 5px 10px;
+            cursor: pointer;
+        }
+        @media (max-width: 600px) {
+            th, td {
+                display: block;
+                width: 100%;
+                text-align: left;
+            }
+            th::after, td::after {
+                content: attr(data-label);
+                float: left;
+                font-weight: bold;
+                margin-right: 10px;
+            }
         }
     </style>
 </head>
@@ -32,9 +70,9 @@
     <table id="data-table">
         <thead>
             <tr>
-                <th>序号</th>
-                <th>文件名</th>
-                <th>夸克链接</th>
+                <th class="resizable" data-label="序号">序号</th>
+                <th class="resizable" data-label="文件名">文件名</th>
+                <th class="resizable" data-label="夸克链接">夸克链接</th>
             </tr>
         </thead>
         <tbody id="table-body">
@@ -47,6 +85,7 @@
         const itemsPerPage = 10;
         let currentPage = 1;
         let filteredData = [];
+        let originalData = [];
 
         // 读取 JSON 文件并生成表格
         fetch('qf_source.json')
@@ -58,7 +97,8 @@
             })
             .then(data => {
                 const tableData = data.find(item => item.type === 'table' && item.name === 'qf_source');
-                filteredData = tableData.data;
+                originalData = tableData.data;
+                filteredData = originalData;
                 displayTable();
             })
             .catch(error => {
@@ -108,7 +148,7 @@
 
         function searchTable() {
             const searchInput = document.getElementById('search-input').value.toLowerCase();
-            filteredData = data.find(item => item.type === 'table' && item.name === 'qf_source').data.filter(item => item.title.toLowerCase().includes(searchInput));
+            filteredData = originalData.filter(item => item.title.toLowerCase().includes(searchInput));
             currentPage = 1;
             displayTable();
         }
@@ -128,6 +168,29 @@
             a.click();
             URL.revokeObjectURL(url);
         }
+
+        // 添加列宽调节功能
+        const resizableHeaders = document.querySelectorAll('th.resizable');
+        resizableHeaders.forEach(header => {
+            let startX, startWidth;
+
+            header.addEventListener('mousedown', function(e) {
+                startX = e.clientX;
+                startWidth = header.offsetWidth;
+                document.addEventListener('mousemove', resize);
+                document.addEventListener('mouseup', stopResize);
+            });
+
+            function resize(e) {
+                const dx = e.clientX - startX;
+                header.style.width = startWidth + dx + 'px';
+            }
+
+            function stopResize() {
+                document.removeEventListener('mousemove', resize);
+                document.removeEventListener('mouseup', stopResize);
+            }
+        });
     </script>
 </body>
 </html>
