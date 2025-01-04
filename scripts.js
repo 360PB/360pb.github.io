@@ -100,8 +100,21 @@ function downloadData() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'filtered_data.json';
+    a.download = 'panhub.fun_filtered_data.json';
     a.click();
+    URL.revokeObjectURL(url);
+}
+
+function downloadLinks() {
+    const links = filteredData.map(item => item.url).join('\n');
+    const blob = new Blob([links], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'panhub.fun_download_links.txt';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
     URL.revokeObjectURL(url);
 }
 
