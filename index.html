@@ -1,22 +1,39 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>夸克链接表格</title>
     <title>短剧</title>
     <style>
         body {
             font-family: 'Courier New', Courier, monospace;
-            background-color: #1e1e1e;
+            background: linear-gradient(to bottom, #ffcc00, #ff9900);
             color: #ffffff;
             padding: 20px;
             box-sizing: border-box;
         }
+        a {
+            font-size: 20px;
+            text-decoration: none;
+            padding: 10px 15px;
+            margin: -3px;
+        }
+        a:link, a:visited {
+            background-color: lightgrey;
+            color: red;
+        }
+        a:hover {
+            background-color: brown;
+            color: white;
+        }
+        a:active {
+            font-weight: 700;
+            color: lawngreen;
+        }
         table {
             width: 100%;
             border-collapse: collapse;
-            table-layout: fixed;
+            margin-top: 20px;
         }
         th, td {
             border: 1px solid #444;
@@ -28,20 +45,9 @@
         }
         th {
             background-color: #333;
-            cursor: pointer;
         }
-        th.resizable {
-            position: relative;
-        }
-        th.resizable::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: -5px;
-            bottom: 0;
-            width: 10px;
-            cursor: col-resize;
-            background: linear-gradient(to right, #333 0%, #333 100%);
+        tr:hover {
+            background-color: #f5f5f5;
         }
         .pagination {
             margin-top: 20px;
@@ -57,18 +63,6 @@
         }
         .pagination .active {
             background-color: #555;
-        }
-        @media (max-width: 600px) {
-            th, td {
-                display: block;
-                width: 100%;
-            }
-            th::after, td::after {
-                content: attr(data-label);
-                float: left;
-                font-weight: bold;
-                margin-right: 10px;
-            }
         }
     </style>
 </head>
@@ -93,31 +87,46 @@
     <script>
         const itemsPerPage = 10;
         let currentPage = 1;
-        let filteredData = [];
         let originalData = [];
+        let filteredData = [];
 
-        // 读取 JSON 文件并生成表格
-        fetch('qf_source.json')
-            .then(response => {
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchDataAndDisplay();
+            setupEventListeners();
+        });
+
+        async function fetchDataAndDisplay() {
+            try {
+                const response = await fetch('qf_source.json');
                 if (!response.ok) {
                     throw new Error('网络响应错误');
                 }
-                return response.json();
-            })
-            .then(data => {
+                const data = await response.json();
                 const tableData = data.find(item => item.type === 'table' && item.name === 'qf_source');
                 originalData = tableData.data;
-                filteredData = originalData;
+                filteredData = [...originalData];
                 displayTable();
-            })
-            .catch(error => {
+            } catch (error) {
                 console.error('获取数据时发生错误:', error);
-            });
+            }
+        }
+
+        function setupEventListeners() {
+            document.getElementById('search-input').addEventListener('input', searchTable);
+            document.getElementById('download-button').addEventListener('click', downloadData);
+            document.querySelector('.pagination').addEventListener('click', handlePaginationClick);
+        }
+
+        function handlePaginationClick(event) {
+            if (event.target.tagName === 'BUTTON') {
+                currentPage = parseInt(event.target.textContent);
+                displayTable();
+            }
+        }
 
         function displayTable() {
             const tableBody = document.getElementById('table-body');
-            tableBody.innerHTML = '';
-
+            const fragment = document.createDocumentFragment();
             const startIndex = (currentPage - 1) * itemsPerPage;
             const endIndex = startIndex + itemsPerPage;
             const pageData = filteredData.slice(startIndex, endIndex);
@@ -129,9 +138,11 @@
                     <td>${item.title}</td>
                     <td><a href="${item.url}" target="_blank">${item.url}</a></td>
                 `;
-                tableBody.appendChild(row);
+                fragment.appendChild(row);
             });
 
+            tableBody.innerHTML = '';
+            tableBody.appendChild(fragment);
             updatePagination();
         }
 
@@ -140,10 +151,9 @@
             pagination.innerHTML = '';
 
             const totalPages = Math.ceil(filteredData.length / itemsPerPage);
-
             for (let i = 1; i <= totalPages; i++) {
                 const button = document.createElement('button');
-                button.innerText = i;
+                button.textContent = i;
                 button.addEventListener('click', () => {
                     currentPage = i;
                     displayTable();
@@ -177,29 +187,6 @@
             a.click();
             URL.revokeObjectURL(url);
         }
-
-        // 添加列宽调节功能
-        const resizableHeaders = document.querySelectorAll('th.resizable');
-        resizableHeaders.forEach(header => {
-            let startX, startWidth;
-
-            header.addEventListener('mousedown', function(e) {
-                startX = e.clientX;
-                startWidth = header.offsetWidth;
-                document.addEventListener('mousemove', resize);
-                document.addEventListener('mouseup', stopResize);
-            });
-
-            function resize(e) {
-                const dx = e.clientX - startX;
-                header.style.width = startWidth + dx + 'px';
-            }
-
-            function stopResize() {
-                document.removeEventListener('mousemove', resize);
-                document.removeEventListener('mouseup', stopResize);
-            }
-        });
     </script>
 </body>
 </html>
