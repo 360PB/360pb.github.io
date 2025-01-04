@@ -39,24 +39,25 @@ function handlePaginationClick(event) {
 }
 
 function displayTable() {
-    const tableBody = document.getElementById('table-body');
+    const resourceList = document.getElementById('resource-list');
     const fragment = document.createDocumentFragment();
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     const pageData = filteredData.slice(startIndex, endIndex);
 
     pageData.forEach(item => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${item.source_id}</td>
-            <td>${item.title}</td>
-            <td><a href="${item.url}" target="_blank">${item.url}</a></td>
+        const card = document.createElement('div');
+        card.className = 'resource-card';
+        card.innerHTML = `
+            <h3>${item.title}</h3>
+            <p>来源：夸克网盘</p>
+            <a href="${item.url}" class="source-link" target="_blank">立即访问</a>
         `;
-        fragment.appendChild(row);
+        fragment.appendChild(card);
     });
 
-    tableBody.innerHTML = '';
-    tableBody.appendChild(fragment);
+    resourceList.innerHTML = '';
+    resourceList.appendChild(fragment);
     updatePagination();
 }
 
