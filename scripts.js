@@ -30,44 +30,37 @@ class DataManager {
     }
 
     async initialize() {
-        if (this.initialized) return;
+		if (this.initialized) return;
+	
+		try {
+			this.showLoading();
+	
+			// 加载 data/file_list.json 文件
+			const response = await fetch('data/file_list.json');
+			if (!response.ok) throw new Error('无法加载文件列表');
+			const jsonFiles = await response.json();
+	
+			// 加载所有 JSON 文件
+			let loadedFiles = 0;
+			for (const fileName of jsonFiles) {
+				const data = await this.loadFile(`data/${fileName}`);
+				this.allData.push(...data);
+	
+				loadedFiles++;
+				this.updateLoadingProgress(loadedFiles, jsonFiles.length);
+			}
+	
+			this.initialized = true;
+			this.hideLoading();
+		} catch (error) {
+			console.error('初始化失败:', error);
+			if (this.loadingText) {
+				this.loadingText.textContent = '加载失败，请刷新页面重试';
+			}
+			throw error;
+		}
+	}
 
-        try {
-            this.showLoading();
-
-            // 获取 data 目录下的所有文件列表
-            const response = await fetch('data/');
-            const html = await response.text();
-
-            // 解析 HTML 获取所有 .json 文件
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(html, 'text/html');
-            const links = Array.from(doc.querySelectorAll('a'));
-            const jsonFiles = links
-                .map(link => link.href)
-                .filter(href => href.endsWith('.json'))
-                .map(href => href.split('/').pop());
-
-            // 加载所有 JSON 文件
-            let loadedFiles = 0;
-            for (const fileName of jsonFiles) {
-                const data = await this.loadFile(fileName);
-                this.allData.push(...data);
-
-                loadedFiles++;
-                this.updateLoadingProgress(loadedFiles, jsonFiles.length); // 更新进度
-            }
-
-            this.initialized = true;
-            this.hideLoading(); // 隐藏加载进度
-        } catch (error) {
-            console.error('初始化失败:', error);
-            if (this.loadingText) {
-                this.loadingText.textContent = '加载失败，请刷新页面重试';
-            }
-            throw error;
-        }
-    }
 
     async loadFile(fileName) {
         if (this.cache.has(fileName)) {
