@@ -41,33 +41,37 @@ function setupEventListeners() {
     document.querySelector('.pagination').addEventListener('click', handlePaginationClick);
 }
 
+// 移除重复的事件监听代码，保留一个统一的处理函数
 function handlePaginationClick(event) {
     if (event.target.tagName !== 'BUTTON') return;
     
     const buttonText = event.target.textContent;
     const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+    let newPage = currentPage;
     
-    // 移除重复的事件监听，只在这里处理所有分页点击
     switch(buttonText) {
         case '上一页':
             if (currentPage > 1) {
-                currentPage--;
+                newPage = currentPage - 1;
             }
             break;
         case '下一页':
             if (currentPage < totalPages) {
-                currentPage++;
+                newPage = currentPage + 1;
             }
             break;
         default:
             // 数字页码
             const pageNum = parseInt(buttonText);
             if (!isNaN(pageNum)) {
-                currentPage = pageNum;
+                newPage = pageNum;
             }
     }
     
-    displayTable();
+    if (newPage !== currentPage) {
+        currentPage = newPage;
+        displayTable();
+    }
 }
 
 
@@ -232,33 +236,9 @@ function updatePagination() {
     nextButton.disabled = currentPage === totalPages;
     pagination.appendChild(nextButton);
 
-    // 为所有按钮添加点击事件
+    // 移除所有已存在的点击事件监听器
     pagination.querySelectorAll('button').forEach(button => {
-        button.addEventListener('click', (e) => {
-            const buttonText = e.target.textContent;
-            const totalPages = Math.ceil(filteredData.length / itemsPerPage);
-            
-            switch(buttonText) {
-                case '上一页':
-                    if (currentPage > 1) {
-                        currentPage--;
-                    }
-                    break;
-                case '下一页':
-                    if (currentPage < totalPages) {
-                        currentPage++;
-                    }
-                    break;
-                default:
-                    // 数字页码
-                    const pageNum = parseInt(buttonText);
-                    if (!isNaN(pageNum)) {
-                        currentPage = pageNum;
-                    }
-            }
-            
-            displayTable();
-        });
+        button.removeEventListener('click', handlePaginationClick);
     });
 }
 
