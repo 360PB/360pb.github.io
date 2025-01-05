@@ -161,15 +161,22 @@ function setupItemsPerPageSelector() {
     });
 }
 
+// 修改 fetchDataAndDisplay 函数
 async function fetchDataAndDisplay() {
     const dataManager = new DataManager();
     try {
-        await dataManager.initialize(); // 初始化数据
-        originalData = dataManager.allData; // 获取所有数据
-        filteredData = [...originalData]; // 默认显示所有数据
-        displayTable(); // 显示数据表
+        await dataManager.initialize();
+        if (dataManager.allData.length > 0) {
+            originalData = dataManager.allData;
+            filteredData = [...originalData];
+            displayTable();
+        } else {
+            console.error('没有加载到任何数据');
+            document.getElementById('loading-text').textContent = '未找到数据，请检查数据文件';
+        }
     } catch (error) {
         console.error('获取数据时发生错误:', error);
+        document.getElementById('loading-text').textContent = '加载失败，请刷新页面重试';
     }
 }
 
