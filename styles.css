@@ -201,28 +201,40 @@ h2 {
 .pagination {
     display: flex;
     justify-content: center;
-    gap: 10px;
-    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
     margin-top: 20px;
 }
 
 .pagination button {
-    padding: 10px 15px;
+    padding: 8px 12px;
     background-color: #f9f9f9;
     border: 1px solid #ddd;
+    border-radius: 4px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: all 0.3s ease;
 }
 
-.pagination button:hover {
-    background-color: #ddd;
+.pagination button:hover:not(:disabled) {
+    background-color: #e9ecef;
 }
 
-.pagination .active {
+.pagination button.active {
     background-color: #007bff;
     color: white;
-    border: 1px solid #007bff;
+    border-color: #007bff;
 }
+
+.pagination button:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.pagination .ellipsis {
+    padding: 0 8px;
+    color: #6c757d;
+}
+
 
 /* 响应式设计 */
 @media (max-width: 768px) {

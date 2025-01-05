@@ -171,80 +171,90 @@ function updatePagination() {
     pagination.innerHTML = '';
 
     const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+    
+    if (totalPages <= 1) return; // 如果只有一页，不显示分页
 
-    // 添加“上一页”按钮
-    if (currentPage > 1) {
-        const prevButton = document.createElement('button');
-        prevButton.textContent = '上一页';
-        prevButton.addEventListener('click', () => {
-            currentPage--;
-            displayTable();
-        });
-        pagination.appendChild(prevButton);
-    }
-
-    // 显示第一页码按钮
-    const firstPageButton = document.createElement('button');
-    firstPageButton.textContent = '1';
-    firstPageButton.addEventListener('click', () => {
-        currentPage = 1;
+    // 添加"上一页"按钮
+    const prevButton = document.createElement('button');
+    prevButton.textContent = '上一页';
+    prevButton.disabled = currentPage === 1;
+    prevButton.addEventListener('click', () => {
+        currentPage--;
         displayTable();
     });
-    pagination.appendChild(firstPageButton);
+    pagination.appendChild(prevButton);
 
-    // 计算当前页附近的页码范围
-    const maxButtonsToShow = 5; // 最多显示的页码按钮数量
-    let startPage = currentPage - Math.floor((maxButtonsToShow - 1) / 2);
-    let endPage = currentPage + Math.floor((maxButtonsToShow - 1) / 2);
+    // 显示页码按钮
+    const maxVisibleButtons = 5; // 最多显示的页码按钮数量
+    let startPage = Math.max(1, currentPage - Math.floor(maxVisibleButtons / 2));
+    let endPage = Math.min(totalPages, startPage + maxVisibleButtons - 1);
 
-    // 如果开始页码小于 2，则调整开始和结束页码
-    if (startPage < 2) {
-        startPage = 2;
-        endPage = startPage + maxButtonsToShow - 2;
+    // 调整 startPage，确保显示足够的页码按钮
+    if (endPage - startPage + 1 < maxVisibleButtons) {
+        startPage = Math.max(1, endPage - maxVisibleButtons + 1);
     }
 
-    // 如果结束页码大于总页数，则调整开始页码
-    if (endPage > totalPages) {
-        startPage = totalPages - maxButtonsToShow + 1;
-        endPage = totalPages;
+    // 添加省略号和页码按钮
+    if (startPage > 1) {
+        const firstButton = document.createElement('button');
+        firstButton.textContent = '1';
+        firstButton.addEventListener('click', () => {
+            currentPage = 1;
+            displayTable();
+        });
+        pagination.appendChild(firstButton);
+
+        if (startPage > 2) {
+            const ellipsis = document.createElement('span');
+            ellipsis.textContent = '...';
+            ellipsis.className = 'ellipsis';
+            pagination.appendChild(ellipsis);
+        }
     }
 
     // 添加页码按钮
     for (let i = startPage; i <= endPage; i++) {
         const pageButton = document.createElement('button');
         pageButton.textContent = i;
+        if (i === currentPage) {
+            pageButton.classList.add('active');
+        }
         pageButton.addEventListener('click', () => {
             currentPage = i;
             displayTable();
         });
-        if (i === currentPage) {
-            pageButton.classList.add('active');
-        }
         pagination.appendChild(pageButton);
     }
 
-    // 显示最后一页码按钮
-    if (currentPage !== 1 && totalPages - 1 > endPage) {
-        const lastPageButton = document.createElement('button');
-        lastPageButton.textContent = totalPages;
-        lastPageButton.addEventListener('click', () => {
+    // 添加末尾省略号和最后一页
+    if (endPage < totalPages) {
+        if (endPage < totalPages - 1) {
+            const ellipsis = document.createElement('span');
+            ellipsis.textContent = '...';
+            ellipsis.className = 'ellipsis';
+            pagination.appendChild(ellipsis);
+        }
+
+        const lastButton = document.createElement('button');
+        lastButton.textContent = totalPages;
+        lastButton.addEventListener('click', () => {
             currentPage = totalPages;
             displayTable();
         });
-        pagination.appendChild(lastPageButton);
+        pagination.appendChild(lastButton);
     }
 
-    // 添加“下一页”按钮
-    if (currentPage < totalPages) {
-        const nextButton = document.createElement('button');
-        nextButton.textContent = '下一页';
-        nextButton.addEventListener('click', () => {
-            currentPage++;
-            displayTable();
-        });
-        pagination.appendChild(nextButton);
-    }
+    // 添加"下一页"按钮
+    const nextButton = document.createElement('button');
+    nextButton.textContent = '下一页';
+    nextButton.disabled = currentPage === totalPages;
+    nextButton.addEventListener('click', () => {
+        currentPage++;
+        displayTable();
+    });
+    pagination.appendChild(nextButton);
 }
+
 
 class BubbleEffect {
     constructor() {
