@@ -22,7 +22,7 @@
             <button onclick="filterSelection('1')">短剧</button>
             <button onclick="filterSelection('11')">学习</button>
             <button onclick="filterSelection('8')">游戏</button>
-            <button onclick="filterSelection('9')">软件</button>           
+            <button onclick="filterSelection('9')">软件</button>
         </div>
 
         <!-- 搜索框 -->
@@ -40,8 +40,20 @@
         </div>
 
         <!-- 分页 -->
-        <div class="pagination" id="pagination">
-            <!-- 分页按钮将通过 JavaScript 动态生成 -->
+        <div class="pagination-wrapper">
+            <div class="pagination" id="pagination">
+                <!-- 分页按钮将通过 JavaScript 动态生成 -->
+            </div>
+            <!-- 每页显示数量设置 -->
+            <div class="items-per-page">
+                <label for="items-per-page-select">每页显示:</label>
+                <select id="items-per-page-select">
+                    <option value="4">4</option>
+                    <option value="6" selected>6</option>
+                    <option value="8">8</option>
+                    <option value="10">10</option>
+                </select>
+            </div>
         </div>
     </div>
 

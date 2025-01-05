@@ -172,12 +172,19 @@ h2 {
     border-radius: 4px;
 }
 
-/* 分页 */
+/* 分页区域样式 */
+.pagination-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
 .pagination {
     display: flex;
-    justify-content: center;
     gap: 10px;
-    margin-top: 20px;
+    flex-wrap: wrap;
 }
 
 .pagination button {
@@ -196,6 +203,25 @@ h2 {
     background-color: #007bff;
     color: white;
     border: 1px solid #007bff;
+}
+
+/* 每页显示数量设置样式 */
+.items-per-page {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+}
+
+.items-per-page label {
+    color: #333;
+}
+
+.items-per-page select {
+    padding: 5px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
 }
 
 /* 响应式设计 */

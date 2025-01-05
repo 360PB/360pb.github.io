@@ -1,4 +1,4 @@
-const itemsPerPage = 6;
+let itemsPerPage = 10; // 默认每页显示10个卡片
 let currentPage = 1;
 let originalData = [];
 let filteredData = [];
@@ -7,7 +7,18 @@ let currentFilter = 'all';
 document.addEventListener('DOMContentLoaded', () => {
     fetchDataAndDisplay();
     setupEventListeners();
+    setupItemsPerPageSelector();
+    new BubbleEffect(); // 初始化气泡效果
 });
+
+function setupItemsPerPageSelector() {
+    const itemsPerPageSelect = document.getElementById('items-per-page-select');
+    itemsPerPageSelect.addEventListener('change', (event) => {
+        itemsPerPage = parseInt(event.target.value, 10);
+        currentPage = 1; // 重置到第一页
+        displayTable();
+    });
+}
 
 async function fetchDataAndDisplay() {
     try {
@@ -27,7 +38,6 @@ async function fetchDataAndDisplay() {
 
 function setupEventListeners() {
     document.getElementById('search-input').addEventListener('input', searchTable);
-    document.getElementById('download-button').addEventListener('click', downloadData);
     document.querySelector('.pagination').addEventListener('click', handlePaginationClick);
 }
 
@@ -82,6 +92,7 @@ function sortTable(ascending) {
     currentPage = 1;
     displayTable();
 }
+
 function searchTable() {
     const searchInput = document.getElementById('search-input').value.toLowerCase();
     filteredData = originalData.filter(item => item.title.toLowerCase().includes(searchInput));
@@ -172,34 +183,8 @@ function updatePagination() {
         pagination.appendChild(prevButton);
     }
 
-    // 显示第一页码按钮
-    const firstPageButton = document.createElement('button');
-    firstPageButton.textContent = '1';
-    firstPageButton.addEventListener('click', () => {
-        currentPage = 1;
-        displayTable();
-    });
-    pagination.appendChild(firstPageButton);
-
-    // 计算当前页附近的页码范围
-    const maxButtonsToShow = 5; // 最多显示的页码按钮数量
-    let startPage = currentPage - Math.floor((maxButtonsToShow - 1) / 2);
-    let endPage = currentPage + Math.floor((maxButtonsToShow - 1) / 2);
-
-    // 如果开始页码小于 2，则调整开始和结束页码
-    if (startPage < 2) {
-        startPage = 2;
-        endPage = startPage + maxButtonsToShow - 2;
-    }
-
-    // 如果结束页码大于总页数，则调整开始页码
-    if (endPage > totalPages) {
-        startPage = totalPages - maxButtonsToShow + 1;
-        endPage = totalPages;
-    }
-
     // 添加页码按钮
-    for (let i = startPage; i <= endPage; i++) {
+    for (let i = 1; i <= totalPages; i++) {
         const pageButton = document.createElement('button');
         pageButton.textContent = i;
         pageButton.addEventListener('click', () => {
@@ -210,17 +195,6 @@ function updatePagination() {
             pageButton.classList.add('active');
         }
         pagination.appendChild(pageButton);
-    }
-
-    // 显示最后一页码按钮
-    if (currentPage !== 1 && totalPages - 1 > endPage) {
-        const lastPageButton = document.createElement('button');
-        lastPageButton.textContent = totalPages;
-        lastPageButton.addEventListener('click', () => {
-            currentPage = totalPages;
-            displayTable();
-        });
-        pagination.appendChild(lastPageButton);
     }
 
     // 添加“下一页”按钮
@@ -238,7 +212,7 @@ function updatePagination() {
 class BubbleEffect {
     constructor() {
         this.container = document.getElementById('bubbles-container');
-        this.bubbleCount = 20; // 气泡数量
+        this.bubbleCount = 50; // 增加气泡数量
         this.init();
     }
 
@@ -253,8 +227,8 @@ class BubbleEffect {
         const bubble = document.createElement('div');
         bubble.className = 'bubble';
         
-        // 随机大小 (20-60px)
-        const size = Math.random() * 40 + 20;
+        // 增加气泡大小 (40-100px)
+        const size = Math.random() * 60 + 40;
         bubble.style.width = `${size}px`;
         bubble.style.height = `${size}px`;
         
@@ -298,8 +272,3 @@ class BubbleEffect {
         }
     }
 }
-
-// 页面加载完成后初始化气泡效果
-document.addEventListener('DOMContentLoaded', () => {
-    new BubbleEffect();
-});
