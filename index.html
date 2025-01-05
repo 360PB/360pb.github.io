@@ -2,47 +2,57 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>资源库</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="wrapper">
-      <div><span class="dot"></span></div>
-      <div><span class="dot"></span></div>
-      <div><span class="dot"></span></div>
-      <div><span class="dot"></span></div>
-      <div><span class="dot"></span></div>
-      <div><span class="dot"></span></div>
-      <div><span class="dot"></span></div>
-      <div><span class="dot"></span></div>
-      <div><span class="dot"></span></div>
-      <div><span class="dot"></span></div>
-      <div><span class="dot"></span></div>
-      <div><span class="dot"></span></div>
-      <div><span class="dot"></span></div>
-      <div><span class="dot"></span></div>
-      <div><span class="dot"></span></div>
-	  <!-- 可以添加更多气泡 -->
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
     </div>
-    <h1>资源库</h1>
-    <h2>数据源: <a href="https://panhub.fun/" target="_blank">https://panhub.fun/</a></h2>
-    <div class="filters">
-        <button onclick="filterSelection('all')">全部</button>
-        <button onclick="filterSelection('1')">短剧</button>
-        <button onclick="filterSelection('11')">学习资料</button>
-        <button onclick="filterSelection('8')">游戏</button>
-        <button onclick="filterSelection('9')">软件</button>
-        <button onclick="filterSelection('7')">综合</button>
-    </div>
-    <input type="text" id="search-input" placeholder="搜索资源" oninput="searchTable()">
-    <button onclick="downloadData()">下载数据表</button>
-    <button onclick="downloadLinks()">仅下载链接</button>
-    <div id="resource-list" class="resource-list">
-        <!-- 资源卡片将通过 JavaScript 动态生成 -->
-    </div>
-    <div class="pagination" id="pagination">
-        <!-- 分页按钮将通过 JavaScript 动态生成 -->
+    <div class="content">
+        <h1>资源库</h1>
+        <h2>数据源: <a href="https://panhub.fun/" target="_blank">https://panhub.fun/</a></h2>
+        
+        <!-- 筛选按钮 -->
+        <div class="filters">
+            <button onclick="filterSelection('all')">全部</button>
+            <button onclick="filterSelection('1')">短剧</button>
+            <button onclick="filterSelection('11')">学习资料</button>
+            <button onclick="filterSelection('8')">游戏</button>
+            <button onclick="filterSelection('9')">软件</button>
+            <button onclick="filterSelection('7')">综合</button>
+        </div>
+
+        <!-- 搜索框 -->
+        <input type="text" id="search-input" placeholder="搜索资源" oninput="searchTable()">
+
+        <!-- 下载按钮 -->
+        <div class="action-buttons">
+            <button onclick="downloadData()">下载数据表</button>
+            <button onclick="downloadLinks()">仅下载链接</button>
+        </div>
+
+        <!-- 资源卡片列表 -->
+        <div id="resource-list" class="resource-list">
+            <!-- 资源卡片将通过 JavaScript 动态生成 -->
+        </div>
+
+        <!-- 分页 -->
+        <div class="pagination" id="pagination">
+            <!-- 分页按钮将通过 JavaScript 动态生成 -->
+        </div>
     </div>
 
     <script src="scripts.js"></script>
