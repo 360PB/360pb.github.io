@@ -5,6 +5,7 @@ class DataManager {
         this.initialized = false;
         this.loadingOverlay = document.getElementById('loading-overlay'); // 加载遮罩层
         this.loadingText = document.getElementById('loading-text');     // 加载进度文本
+        this.closeButton = document.getElementById('loading-close-btn'); // 手动关闭按钮
     }
 
     // 显示加载遮罩层
@@ -12,12 +13,28 @@ class DataManager {
         if (this.loadingOverlay) {
             this.loadingOverlay.classList.add('visible');
         }
+
+        // 显示关闭按钮（初始隐藏）
+        if (this.closeButton) {
+            this.closeButton.style.display = 'none';
+        }
     }
 
     // 隐藏加载遮罩层
     hideLoading() {
         if (this.loadingOverlay) {
-            this.loadingOverlay.classList.remove('visible');
+            // 显示关闭按钮
+            if (this.closeButton) {
+                this.closeButton.style.display = 'block';
+                this.closeButton.addEventListener('click', () => {
+                    this.loadingOverlay.classList.remove('visible');
+                });
+            }
+
+            // 设置 2 秒后自动关闭
+            setTimeout(() => {
+                this.loadingOverlay.classList.remove('visible');
+            }, 2000);
         }
     }
 
@@ -43,7 +60,7 @@ class DataManager {
             }
             const text = await listResponse.text();
             const jsonFiles = text.split('\n').filter(name => name.trim() !== '');
-            
+
             console.log('找到以下数据文件:', jsonFiles);
 
             if (jsonFiles.length === 0) {
@@ -56,7 +73,7 @@ class DataManager {
                 try {
                     console.log(`正在加载文件: data/${fileName}`);
                     const data = await this.loadFile(`data/${fileName}`);
-                    
+
                     // 检查数据格式
                     if (Array.isArray(data)) {
                         this.allData.push(...data);
@@ -90,35 +107,35 @@ class DataManager {
         }
     }
 
+    async loadFile(fileName) {
+        if (this.cache.has(fileName)) {
+            return this.cache.get(fileName);
+        }
 
+        try {
+            console.log(`发起请求: ${fileName}`);
+            const response = await fetch(fileName);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const data = await response.json();
 
-	async loadFile(fileName) {
-		if (this.cache.has(fileName)) {
-			return this.cache.get(fileName);
-		}
-	
-		try {
-			console.log(`发起请求: ${fileName}`);
-			const response = await fetch(fileName);
-			if (!response.ok) {
-				throw new Error(`HTTP error! status: ${response.status}`);
-			}
-			const data = await response.json();
-	
-			// 解析数据
-			const tableData = data.find(item => item.type === 'table' && item.name === 'qf_source');
-			if (tableData && Array.isArray(tableData.data)) {
-				this.cache.set(fileName, tableData.data);
-				return tableData.data;
-			} else {
-				console.error(`文件 ${fileName} 的数据格式不正确:`, data);
-				return [];
-			}
-		} catch (error) {
-			console.error(`加载文件 ${fileName} 失败:`, error);
-			throw error;
-		}
-	}
+            // 解析数据
+            const tableData = data.find(item => item.type === 'table' && item.name === 'qf_source');
+            if (tableData && Array.isArray(tableData.data)) {
+                this.cache.set(fileName, tableData.data);
+                return tableData.data;
+            } else {
+                console.error(`文件 ${fileName} 的数据格式不正确:`, data);
+                return [];
+            }
+        } catch (error) {
+            console.error(`加载文件 ${fileName} 失败:`, error);
+            throw error;
+        }
+    }
+}
+
 
 
     async getPageData(page, itemsPerPage, filter = 'all') {

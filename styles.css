@@ -11,6 +11,23 @@ body {
     margin: 0;
     background-color: #f4f4f4;
 }
+/* 关闭按钮样式 */
+.loading-close-btn {
+    display: none; /* 默认隐藏 */
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.loading-close-btn:hover {
+    background-color: #0056b3;
+}
+
 
 /* 加载遮罩层样式 */
 .loading-overlay {
