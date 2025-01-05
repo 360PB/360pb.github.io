@@ -28,10 +28,20 @@
         <!-- 搜索框 -->
         <input type="text" id="search-input" placeholder="搜索资源" oninput="searchTable()">
 
-        <!-- 下载按钮 -->
+        <!-- 操作按钮区域 -->
         <div class="action-buttons">
             <button onclick="downloadData()">下载数据表</button>
             <button onclick="downloadLinks()">仅下载链接</button>
+            <!-- 每页显示数量设置 -->
+            <div class="items-per-page">
+                <label for="items-per-page-select">每页显示:</label>
+                <select id="items-per-page-select">
+                    <option value="5">5</option>
+                    <option value="10" selected>10</option>
+                    <option value="15">15</option>
+                    <option value="20">20</option>
+                </select>
+            </div>
         </div>
 
         <!-- 资源卡片列表 -->
@@ -40,20 +50,8 @@
         </div>
 
         <!-- 分页 -->
-        <div class="pagination-wrapper">
-            <div class="pagination" id="pagination">
-                <!-- 分页按钮将通过 JavaScript 动态生成 -->
-            </div>
-            <!-- 每页显示数量设置 -->
-            <div class="items-per-page">
-                <label for="items-per-page-select">每页显示:</label>
-                <select id="items-per-page-select">
-                    <option value="4">4</option>
-                    <option value="6" selected>6</option>
-                    <option value="8">8</option>
-                    <option value="10">10</option>
-                </select>
-            </div>
+        <div class="pagination" id="pagination">
+            <!-- 分页按钮将通过 JavaScript 动态生成 -->
         </div>
     </div>
 
