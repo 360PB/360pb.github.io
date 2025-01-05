@@ -29,16 +29,17 @@ class DataManager {
         }
     }
 
-    async initialize() {
+	async initialize() {
 		if (this.initialized) return;
 	
 		try {
 			this.showLoading();
 	
-			// 加载 data/file_list.json 文件
-			const response = await fetch('data/file_list.json');
+			// 加载 file_list.txt 文件
+			const response = await fetch('data/file_list.txt');
 			if (!response.ok) throw new Error('无法加载文件列表');
-			const jsonFiles = await response.json();
+			const text = await response.text();
+			const jsonFiles = text.split('\n').filter(name => name.trim() !== '');
 	
 			// 加载所有 JSON 文件
 			let loadedFiles = 0;
@@ -60,6 +61,7 @@ class DataManager {
 			throw error;
 		}
 	}
+
 
 
     async loadFile(fileName) {

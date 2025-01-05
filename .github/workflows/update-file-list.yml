@@ -15,16 +15,18 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
+    - name: Pull latest changes
+      run: git pull origin main  # 确保拉取最新的更改
+
     - name: Generate file list
-      run: |
-        ls data/*.json | sed 's|data/||' | jq -R . | jq -s . > data/file_list.json
+      run: ls data/*.json | sed 's|data/||' > data/file_list.txt
 
     - name: Commit changes
       run: |
         git config --local user.name "github-actions[bot]"
         git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
-        git add data/file_list.json
-        git commit -m "Update file_list.json" || echo "No changes to commit"
+        git add data/file_list.txt
+        git commit -m "Update file_list.txt" || echo "No changes to commit"
 
     - name: Push changes
       uses: ad-m/github-push-action@v0.6.0
