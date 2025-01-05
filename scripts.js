@@ -42,28 +42,33 @@ function setupEventListeners() {
 }
 
 function handlePaginationClick(event) {
-    if (event.target.tagName === 'BUTTON') {
-        const buttonText = event.target.textContent;
-        
-        if (buttonText === '上一页') {
+    if (event.target.tagName !== 'BUTTON') return;
+    
+    const buttonText = event.target.textContent;
+    const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+    
+    // 移除重复的事件监听，只在这里处理所有分页点击
+    switch(buttonText) {
+        case '上一页':
             if (currentPage > 1) {
                 currentPage--;
-                displayTable();
             }
-        } else if (buttonText === '下一页') {
-            const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+            break;
+        case '下一页':
             if (currentPage < totalPages) {
                 currentPage++;
-                displayTable();
             }
-        } else {
-            // 处理数字页码按钮
-            currentPage = parseInt(buttonText);
-            displayTable();
-        }
+            break;
+        default:
+            // 数字页码
+            const pageNum = parseInt(buttonText);
+            if (!isNaN(pageNum)) {
+                currentPage = pageNum;
+            }
     }
+    
+    displayTable();
 }
-
 
 
 // 添加排序功能

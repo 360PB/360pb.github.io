@@ -89,7 +89,7 @@ h2 {
 
 .filters button {
     flex: 1; /* 每个按钮均分可用空间 */
-    min-width: 80px; /* 设置按钮最小宽度，确保按钮在小屏幕上不太窄 */
+    min-width: 60px; /* 设置按钮最小宽度，确保按钮在小屏幕上不太窄 */
     max-width: 120px; /* 设置按钮最大宽度 */
     padding: 10px 15px;
     background-color: #f9f9f9;
