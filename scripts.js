@@ -1,4 +1,130 @@
-let itemsPerPage = 1; // 默认每页显示的卡片数量（PC端）
+class DataManager {
+    constructor() {
+        this.cache = new Map();
+        this.allData = [];
+        this.initialized = false;
+        this.loadingOverlay = document.getElementById('loading-overlay'); // 加载遮罩层
+        this.loadingText = document.getElementById('loading-text');     // 加载进度文本
+    }
+
+    // 显示加载遮罩层
+    showLoading() {
+        if (this.loadingOverlay) {
+            this.loadingOverlay.classList.add('visible');
+        }
+    }
+
+    // 隐藏加载遮罩层
+    hideLoading() {
+        if (this.loadingOverlay) {
+            this.loadingOverlay.classList.remove('visible');
+        }
+    }
+
+    // 更新加载进度
+    updateLoadingProgress(current, total) {
+        if (this.loadingText) {
+            const percentage = Math.round((current / total) * 100);
+            this.loadingText.textContent = `正在加载数据... ${percentage}%`;
+        }
+    }
+
+    async initialize() {
+        if (this.initialized) return;
+
+        try {
+            this.showLoading();
+
+            // 获取 data 目录下的所有文件列表
+            const response = await fetch('data/');
+            const html = await response.text();
+
+            // 解析 HTML 获取所有 .json 文件
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const links = Array.from(doc.querySelectorAll('a'));
+            const jsonFiles = links
+                .map(link => link.href)
+                .filter(href => href.endsWith('.json'))
+                .map(href => href.split('/').pop());
+
+            // 加载所有 JSON 文件
+            let loadedFiles = 0;
+            for (const fileName of jsonFiles) {
+                const data = await this.loadFile(fileName);
+                this.allData.push(...data);
+
+                loadedFiles++;
+                this.updateLoadingProgress(loadedFiles, jsonFiles.length); // 更新进度
+            }
+
+            this.initialized = true;
+            this.hideLoading(); // 隐藏加载进度
+        } catch (error) {
+            console.error('初始化失败:', error);
+            if (this.loadingText) {
+                this.loadingText.textContent = '加载失败，请刷新页面重试';
+            }
+            throw error;
+        }
+    }
+
+    async loadFile(fileName) {
+        if (this.cache.has(fileName)) {
+            return this.cache.get(fileName);
+        }
+
+        try {
+            const response = await fetch(`data/${fileName}`);
+            if (!response.ok) throw new Error(`Failed to load file ${fileName}`);
+            const data = await response.json();
+            this.cache.set(fileName, data);
+            return data;
+        } catch (error) {
+            console.error(`加载文件 ${fileName} 失败:`, error);
+            return [];
+        }
+    }
+
+    async getPageData(page, itemsPerPage, filter = 'all') {
+        await this.initialize();
+
+        let filteredData = this.allData;
+        if (filter !== 'all') {
+            filteredData = this.allData.filter(item =>
+                item.source_category_id.toString() === filter
+            );
+        }
+
+        const startIndex = (page - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+
+        return filteredData.slice(startIndex, endIndex);
+    }
+
+    async search(keyword) {
+        await this.initialize();
+
+        return this.allData.filter(item =>
+            item.title.toLowerCase().includes(keyword.toLowerCase())
+        );
+    }
+
+    async getTotalItems(filter = 'all') {
+        await this.initialize();
+
+        if (filter === 'all') {
+            return this.allData.length;
+        }
+
+        return this.allData.filter(item =>
+            item.source_category_id.toString() === filter
+        ).length;
+    }
+}
+
+// 全局变量
+let itemsPerPage = 15; // 默认每页显示的卡片数量（PC端）
 let currentPage = 1;
 let originalData = [];
 let filteredData = [];
@@ -7,7 +133,7 @@ let currentFilter = 'all';
 document.addEventListener('DOMContentLoaded', () => {
     // 根据设备类型设置每页显示的卡片数量
     setDefaultItemsPerPage();
-    
+
     fetchDataAndDisplay();
     setupEventListeners();
     setupItemsPerPageSelector();
@@ -26,7 +152,6 @@ function setDefaultItemsPerPage() {
     }
 }
 
-
 function setupItemsPerPageSelector() {
     const itemsPerPageSelect = document.getElementById('items-per-page-select');
     itemsPerPageSelect.addEventListener('change', (event) => {
@@ -37,16 +162,12 @@ function setupItemsPerPageSelector() {
 }
 
 async function fetchDataAndDisplay() {
+    const dataManager = new DataManager();
     try {
-        const response = await fetch('qf_source.json');
-        if (!response.ok) {
-            throw new Error('网络响应错误');
-        }
-        const data = await response.json();
-        const tableData = data.find(item => item.type === 'table' && item.name === 'qf_source');
-        originalData = tableData.data;
-        filteredData = [...originalData];
-        displayTable();
+        await dataManager.initialize(); // 初始化数据
+        originalData = dataManager.allData; // 获取所有数据
+        filteredData = [...originalData]; // 默认显示所有数据
+        displayTable(); // 显示数据表
     } catch (error) {
         console.error('获取数据时发生错误:', error);
     }
@@ -60,16 +181,16 @@ function setupEventListeners() {
 // 移除重复的事件监听代码，保留一个统一的处理函数
 function handlePaginationClick(event) {
     if (event.target.tagName !== 'BUTTON') return;
-    
+
     // 记住当前的滚动位置
     const resourceList = document.getElementById('resource-list');
     const listTop = resourceList.offsetTop;
-    
+
     const buttonText = event.target.textContent;
     const totalPages = Math.ceil(filteredData.length / itemsPerPage);
     let newPage = currentPage;
-    
-    switch(buttonText) {
+
+    switch (buttonText) {
         case '上一页':
             if (currentPage > 1) {
                 newPage = currentPage - 1;
@@ -86,7 +207,7 @@ function handlePaginationClick(event) {
                 newPage = pageNum;
             }
     }
-    
+
     if (newPage !== currentPage) {
         currentPage = newPage;
         displayTable();
@@ -96,11 +217,9 @@ function handlePaginationClick(event) {
             behavior: 'smooth' // 使用平滑滚动
         });
     }
-    
+
     event.preventDefault(); // 阻止默认行为
 }
-
-
 
 // 添加排序功能
 let currentSort = 'desc'; // 默认降序
@@ -269,7 +388,6 @@ function updatePagination() {
     });
 }
 
-
 function displayTable() {
     const resourceList = document.getElementById('resource-list');
     const fragment = document.createDocumentFragment();
@@ -305,9 +423,6 @@ function displayTable() {
     updatePagination();
 }
 
-
-
-
 class BubbleEffect {
     constructor() {
         this.container = document.getElementById('bubbles-container');
@@ -325,32 +440,32 @@ class BubbleEffect {
     createBubble() {
         const bubble = document.createElement('div');
         bubble.className = 'bubble';
-        
+
         // 增加气泡大小 (30-90px)
         const size = Math.random() * 60 + 30;
         bubble.style.width = `${size}px`;
         bubble.style.height = `${size}px`;
-        
+
         // 随机位置
         const startX = Math.random() * 100;
         bubble.style.left = `${startX}%`;
-        
+
         // 随机动画持续时间 (4-8秒)
         const duration = Math.random() * 4 + 4;
         bubble.style.setProperty('--duration', `${duration}s`);
-        
+
         // 随机透明度 (0.1-0.7)
         const opacity = Math.random() * 0.6 + 0.1;
         bubble.style.setProperty('--opacity', opacity);
-        
+
         // 添加到容器
         this.container.appendChild(bubble);
-        
+
         // 动画结束后移除气泡
         bubble.addEventListener('animationend', () => {
             bubble.remove();
         });
-        
+
         return bubble;
     }
 
@@ -363,7 +478,7 @@ class BubbleEffect {
     checkAndReplenishBubbles() {
         const currentBubbles = this.container.getElementsByClassName('bubble').length;
         const bubblesNeeded = this.bubbleCount - currentBubbles;
-        
+
         if (bubblesNeeded > 0) {
             for (let i = 0; i < bubblesNeeded; i++) {
                 this.createBubble();

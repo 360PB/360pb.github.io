@@ -12,13 +12,22 @@
             <!-- 气泡将通过 JavaScript 动态生成 -->
         </div>
     </div>
+
+    <!-- 加载进度提示 -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <div id="loading-text">正在加载数据... 0%</div>
+        </div>
+    </div>
+
     <div class="content">
         <h1>资源库</h1>
         <h2>数据源: <a href="https://panhub.fun/" target="_blank">https://panhub.fun/</a></h2>
         
         <!-- 筛选按钮 -->
         <div class="filters">
-            <button onclick="filterSelection('all')">全部</button>
+            <button onclick="filterSelection('all')" class="active">全部</button>
             <button onclick="filterSelection('1')">短剧</button>
             <button onclick="filterSelection('11')">学习</button>
             <button onclick="filterSelection('8')">游戏</button>
