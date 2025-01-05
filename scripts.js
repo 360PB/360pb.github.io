@@ -171,7 +171,7 @@ function updatePagination() {
     pagination.innerHTML = '';
 
     const totalPages = Math.ceil(filteredData.length / itemsPerPage);
-    
+
     if (totalPages <= 1) return; // 如果只有一页，不显示分页
 
     // 添加"上一页"按钮
@@ -179,8 +179,10 @@ function updatePagination() {
     prevButton.textContent = '上一页';
     prevButton.disabled = currentPage === 1;
     prevButton.addEventListener('click', () => {
-        currentPage--;
-        displayTable();
+        if (currentPage > 1) {
+            currentPage--;
+            displayTable();
+        }
     });
     pagination.appendChild(prevButton);
 
@@ -249,11 +251,49 @@ function updatePagination() {
     nextButton.textContent = '下一页';
     nextButton.disabled = currentPage === totalPages;
     nextButton.addEventListener('click', () => {
-        currentPage++;
-        displayTable();
+        if (currentPage < totalPages) {
+            currentPage++;
+            displayTable();
+        }
     });
     pagination.appendChild(nextButton);
 }
+
+function displayTable() {
+    const resourceList = document.getElementById('resource-list');
+    const fragment = document.createDocumentFragment();
+    let sortedData = filteredData;
+
+    // 默认按更新时间降序排序
+    if (!currentSort || currentSort === 'desc') {
+        sortedData.sort((a, b) => b.update_time - a.update_time);
+    } else if (currentSort === 'asc') {
+        sortedData.sort((a, b) => a.update_time - b.update_time);
+    }
+
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const pageData = sortedData.slice(startIndex, endIndex);
+
+    console.log(`Displaying page ${currentPage} with items ${startIndex} to ${endIndex - 1}`);
+
+    pageData.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'resource-card';
+        const updateTime = new Date(item.update_time * 1000).toLocaleString();
+        card.innerHTML = `
+            <h3>${item.title}</h3>
+            <p class="update-time">更新时间: ${updateTime}</p>
+            <a href="${item.url}" class="source-link" target="_blank">立即访问</a>
+        `;
+        fragment.appendChild(card);
+    });
+
+    resourceList.innerHTML = '';
+    resourceList.appendChild(fragment);
+    updatePagination();
+}
+
 
 
 class BubbleEffect {
