@@ -29,38 +29,66 @@ class DataManager {
         }
     }
 
-	async initialize() {
-		if (this.initialized) return;
-	
-		try {
-			this.showLoading();
-	
-			// 加载 file_list.txt 文件
-			const response = await fetch('data/file_list.txt');
-			if (!response.ok) throw new Error('无法加载文件列表');
-			const text = await response.text();
-			const jsonFiles = text.split('\n').filter(name => name.trim() !== '');
-	
-			// 加载所有 JSON 文件
-			let loadedFiles = 0;
-			for (const fileName of jsonFiles) {
-				const data = await this.loadFile(`data/${fileName}`);
-				this.allData.push(...data);
-	
-				loadedFiles++;
-				this.updateLoadingProgress(loadedFiles, jsonFiles.length);
-			}
-	
-			this.initialized = true;
-			this.hideLoading();
-		} catch (error) {
-			console.error('初始化失败:', error);
-			if (this.loadingText) {
-				this.loadingText.textContent = '加载失败，请刷新页面重试';
-			}
-			throw error;
-		}
-	}
+    async initialize() {
+        if (this.initialized) return;
+
+        try {
+            this.showLoading();
+            console.log('开始初始化数据管理器...');
+
+            // 加载文件列表
+            const listResponse = await fetch('data/file_list.txt');
+            if (!listResponse.ok) {
+                throw new Error(`无法加载文件列表: ${listResponse.status} ${listResponse.statusText}`);
+            }
+            const text = await listResponse.text();
+            const jsonFiles = text.split('\n').filter(name => name.trim() !== '');
+            
+            console.log('找到以下数据文件:', jsonFiles);
+
+            if (jsonFiles.length === 0) {
+                throw new Error('文件列表为空');
+            }
+
+            // 加载所有 JSON 文件
+            let loadedFiles = 0;
+            for (const fileName of jsonFiles) {
+                try {
+                    console.log(`正在加载文件: data/${fileName}`);
+                    const data = await this.loadFile(`data/${fileName}`);
+                    
+                    // 检查数据格式
+                    if (Array.isArray(data)) {
+                        this.allData.push(...data);
+                        console.log(`成功加载 ${data.length} 条数据从 ${fileName}`);
+                    } else if (data.data && Array.isArray(data.data)) {
+                        this.allData.push(...data.data);
+                        console.log(`成功加载 ${data.data.length} 条数据从 ${fileName}`);
+                    } else {
+                        console.error(`文件 ${fileName} 的数据格式不正确:`, data);
+                    }
+
+                    loadedFiles++;
+                    this.updateLoadingProgress(loadedFiles, jsonFiles.length);
+                } catch (error) {
+                    console.error(`加载文件 ${fileName} 失败:`, error);
+                }
+            }
+
+            console.log(`总共加载了 ${this.allData.length} 条数据`);
+
+            if (this.allData.length === 0) {
+                throw new Error('未能成功加载任何数据');
+            }
+
+            this.initialized = true;
+            this.hideLoading();
+        } catch (error) {
+            console.error('初始化失败:', error);
+            this.loadingText.textContent = `加载失败: ${error.message}`;
+            throw error;
+        }
+    }
 
 
 
