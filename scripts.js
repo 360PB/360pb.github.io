@@ -249,7 +249,7 @@ function updatePagination() {
 class BubbleEffect {
     constructor() {
         this.container = document.getElementById('bubbles-container');
-        this.bubbleCount = 50; // 增加气泡数量
+        this.bubbleCount = 30; // 增加气泡数量
         this.init();
     }
 
@@ -264,8 +264,8 @@ class BubbleEffect {
         const bubble = document.createElement('div');
         bubble.className = 'bubble';
         
-        // 增加气泡大小 (40-100px)
-        const size = Math.random() * 60 + 40;
+        // 增加气泡大小 (30-90px)
+        const size = Math.random() * 60 + 30;
         bubble.style.width = `${size}px`;
         bubble.style.height = `${size}px`;
         
