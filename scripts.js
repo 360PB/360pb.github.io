@@ -1,15 +1,31 @@
-let itemsPerPage = 10; // 默认每页显示10个卡片
+let itemsPerPage = 12; // 默认每页显示的卡片数量（PC端）
 let currentPage = 1;
 let originalData = [];
 let filteredData = [];
 let currentFilter = 'all';
 
 document.addEventListener('DOMContentLoaded', () => {
+    // 根据设备类型设置每页显示的卡片数量
+    setDefaultItemsPerPage();
+    
     fetchDataAndDisplay();
     setupEventListeners();
     setupItemsPerPageSelector();
     new BubbleEffect(); // 初始化气泡效果
 });
+
+function setDefaultItemsPerPage() {
+    // 检测设备类型
+    const isMobile = window.innerWidth <= 768; // 判断屏幕宽度是否小于等于768px
+    itemsPerPage = isMobile ? 6 : 12; // 手机端默认6个，PC端默认12个
+
+    // 同步更新下拉框的默认选项
+    const itemsPerPageSelect = document.getElementById('items-per-page-select');
+    if (itemsPerPageSelect) {
+        itemsPerPageSelect.value = itemsPerPage;
+    }
+}
+
 
 function setupItemsPerPageSelector() {
     const itemsPerPageSelect = document.getElementById('items-per-page-select');
@@ -45,6 +61,10 @@ function setupEventListeners() {
 function handlePaginationClick(event) {
     if (event.target.tagName !== 'BUTTON') return;
     
+    // 记住当前的滚动位置
+    const resourceList = document.getElementById('resource-list');
+    const listTop = resourceList.offsetTop;
+    
     const buttonText = event.target.textContent;
     const totalPages = Math.ceil(filteredData.length / itemsPerPage);
     let newPage = currentPage;
@@ -61,7 +81,6 @@ function handlePaginationClick(event) {
             }
             break;
         default:
-            // 数字页码
             const pageNum = parseInt(buttonText);
             if (!isNaN(pageNum)) {
                 newPage = pageNum;
@@ -71,8 +90,16 @@ function handlePaginationClick(event) {
     if (newPage !== currentPage) {
         currentPage = newPage;
         displayTable();
+        // 滚动到资源列表的顶部位置
+        window.scrollTo({
+            top: listTop,
+            behavior: 'smooth' // 使用平滑滚动
+        });
     }
+    
+    event.preventDefault(); // 阻止默认行为
 }
+
 
 
 // 添加排序功能
