@@ -6,16 +6,16 @@
 }
 
 /* 基本字体和颜色设置 */
-body {
+body, html {
+    height: 100%;
     font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
-    color: #333;
-    line-height: 1.6;
+    background-color: #030423; /* 使用之前的背景颜色 */
+    color: #fff;
 }
 
 /* 响应式标题 */
 h1 {
-    font-size: 2.5em;
+    font-size: 2em;
     text-align: center;
     padding: 20px 0;
 }
@@ -27,15 +27,34 @@ h1 {
     padding: 20px;
 }
 
-/* 响应式背景 */
-.background {
+/* 气泡动画背景 */
+.bubble-container {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(180deg, #04fafd, 5%, #119dff, 50%, #030423);
+    overflow: hidden;
     z-index: -1;
+}
+
+.bubble {
+    position: absolute;
+    border: 2px solid rgba(255, 255, 255, 0.7);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    opacity: 0.6;
+    animation: moveBubble 5s infinite;
+}
+
+.bubble:nth-child(1) { width: 60px; height: 60px; top: 20%; left: 20%; animation-duration: 8s; }
+.bubble:nth-child(2) { width: 30px; height: 30px; top: 60%; left: 80%; animation-duration: 10s; }
+/* ... 为其他气泡添加样式 ... */
+
+@keyframes moveBubble {
+    0% { transform: scale(0.5) translateY(0); opacity: 0; }
+    50% { opacity: 0.6; }
+    100% { transform: scale(1.5) translateY(-100vh); opacity: 0; }
 }
 
 /* 响应式过滤器 */
@@ -78,8 +97,8 @@ h1 {
 /* 响应式资源卡片 */
 .resource-list {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
+    flex-direction: column;
+    align-items: center;
 }
 
 .resource-card {
@@ -88,8 +107,10 @@ h1 {
     border-radius: 5px;
     padding: 20px;
     margin-bottom: 20px;
-    flex: 1 1 30%;
+    width: 90%;
+    max-width: 600px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    color: #333;
 }
 
 .resource-card h3 {
@@ -141,14 +162,8 @@ h1 {
 
 /* 媒体查询，适配小屏幕设备 */
 @media (max-width: 768px) {
-    .filters button, .resource-card {
-        flex: 1 1 100%;
-    }
-}
-
-@media (max-width: 480px) {
     h1 {
-        font-size: 2em;
+        font-size: 1.8em;
     }
 
     .search-bar input {
