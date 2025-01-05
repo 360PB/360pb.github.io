@@ -200,8 +200,11 @@ function setupItemsPerPageSelector() {
 async function fetchDataAndDisplay() {
     const dataManager = new DataManager();
     try {
+        console.log('开始加载数据...');
         await dataManager.initialize();
+        
         if (dataManager.allData.length > 0) {
+            console.log(`成功加载 ${dataManager.allData.length} 条数据`);
             originalData = dataManager.allData;
             filteredData = [...originalData];
             displayTable();
@@ -211,7 +214,7 @@ async function fetchDataAndDisplay() {
         }
     } catch (error) {
         console.error('获取数据时发生错误:', error);
-        document.getElementById('loading-text').textContent = '加载失败，请刷新页面重试';
+        document.getElementById('loading-text').textContent = `加载失败: ${error.message}`;
     }
 }
 
