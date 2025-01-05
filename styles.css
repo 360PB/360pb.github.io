@@ -59,7 +59,7 @@ body {
     position: relative;
     z-index: 1;
     padding: 20px;
-    max-width: 90%;
+    max-width: 1200px; /* 限制最大宽度 */
     margin: 0 auto;
 }
 
@@ -113,17 +113,19 @@ h2 {
 /* 搜索框 */
 #search-input {
     width: 100%;
+    max-width: 100%; /* 确保搜索框不超过容器宽度 */
     padding: 10px;
     margin: 10px 0;
     font-size: 16px;
     border: 1px solid #ddd;
     border-radius: 4px;
+    box-sizing: border-box;
 }
 
 /* 操作按钮区域样式 */
 .action-buttons {
     display: flex;
-    justify-content: center;
+    justify-content: space-between; /* 在PC端两端对齐 */
     align-items: center;
     gap: 15px;
     margin-bottom: 20px;
@@ -154,6 +156,7 @@ h2 {
     gap: 8px;
     font-size: 14px;
     flex: 1 1 auto;
+    justify-content: flex-end; /* 在PC端靠右对齐 */
 }
 
 .items-per-page label {
