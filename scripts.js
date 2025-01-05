@@ -234,3 +234,72 @@ function updatePagination() {
         pagination.appendChild(nextButton);
     }
 }
+
+class BubbleEffect {
+    constructor() {
+        this.container = document.getElementById('bubbles-container');
+        this.bubbleCount = 20; // 气泡数量
+        this.init();
+    }
+
+    init() {
+        // 初始化时创建气泡
+        this.createBubbles();
+        // 定期检查和补充气泡
+        setInterval(() => this.checkAndReplenishBubbles(), 2000);
+    }
+
+    createBubble() {
+        const bubble = document.createElement('div');
+        bubble.className = 'bubble';
+        
+        // 随机大小 (20-60px)
+        const size = Math.random() * 40 + 20;
+        bubble.style.width = `${size}px`;
+        bubble.style.height = `${size}px`;
+        
+        // 随机位置
+        const startX = Math.random() * 100;
+        bubble.style.left = `${startX}%`;
+        
+        // 随机动画持续时间 (4-8秒)
+        const duration = Math.random() * 4 + 4;
+        bubble.style.setProperty('--duration', `${duration}s`);
+        
+        // 随机透明度 (0.1-0.7)
+        const opacity = Math.random() * 0.6 + 0.1;
+        bubble.style.setProperty('--opacity', opacity);
+        
+        // 添加到容器
+        this.container.appendChild(bubble);
+        
+        // 动画结束后移除气泡
+        bubble.addEventListener('animationend', () => {
+            bubble.remove();
+        });
+        
+        return bubble;
+    }
+
+    createBubbles() {
+        for (let i = 0; i < this.bubbleCount; i++) {
+            this.createBubble();
+        }
+    }
+
+    checkAndReplenishBubbles() {
+        const currentBubbles = this.container.getElementsByClassName('bubble').length;
+        const bubblesNeeded = this.bubbleCount - currentBubbles;
+        
+        if (bubblesNeeded > 0) {
+            for (let i = 0; i < bubblesNeeded; i++) {
+                this.createBubble();
+            }
+        }
+    }
+}
+
+// 页面加载完成后初始化气泡效果
+document.addEventListener('DOMContentLoaded', () => {
+    new BubbleEffect();
+});
