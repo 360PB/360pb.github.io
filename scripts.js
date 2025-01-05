@@ -43,43 +43,28 @@ function setupEventListeners() {
 
 function handlePaginationClick(event) {
     if (event.target.tagName === 'BUTTON') {
-        currentPage = parseInt(event.target.textContent);
-        displayTable();
+        const buttonText = event.target.textContent;
+        
+        if (buttonText === '上一页') {
+            if (currentPage > 1) {
+                currentPage--;
+                displayTable();
+            }
+        } else if (buttonText === '下一页') {
+            const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+            if (currentPage < totalPages) {
+                currentPage++;
+                displayTable();
+            }
+        } else {
+            // 处理数字页码按钮
+            currentPage = parseInt(buttonText);
+            displayTable();
+        }
     }
 }
 
-function displayTable() {
-    const resourceList = document.getElementById('resource-list');
-    const fragment = document.createDocumentFragment();
-    let sortedData = filteredData;
 
-    // 默认按更新时间降序排序
-    if (!currentSort || currentSort === 'desc') {
-        sortedData.sort((a, b) => b.update_time - a.update_time);
-    } else if (currentSort === 'asc') {
-        sortedData.sort((a, b) => a.update_time - b.update_time);
-    }
-
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    const pageData = sortedData.slice(startIndex, endIndex);
-
-    pageData.forEach(item => {
-        const card = document.createElement('div');
-        card.className = 'resource-card';
-        const updateTime = new Date(item.update_time * 1000).toLocaleString();
-        card.innerHTML = `
-            <h3>${item.title}</h3>
-            <p class="update-time">更新时间: ${updateTime}</p>
-            <a href="${item.url}" class="source-link" target="_blank">立即访问</a>
-        `;
-        fragment.appendChild(card);
-    });
-
-    resourceList.innerHTML = '';
-    resourceList.appendChild(fragment);
-    updatePagination();
-}
 
 // 添加排序功能
 let currentSort = 'desc'; // 默认降序
@@ -293,6 +278,7 @@ function displayTable() {
     resourceList.appendChild(fragment);
     updatePagination();
 }
+
 
 
 
