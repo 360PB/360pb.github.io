@@ -81,18 +81,24 @@ h2 {
 /* 筛选按钮 */
 .filters {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: wrap; /* 允许换行 */
     justify-content: center;
     gap: 10px;
     margin-bottom: 20px;
 }
 
 .filters button {
+    flex: 1; /* 每个按钮均分可用空间 */
+    min-width: 80px; /* 设置按钮最小宽度，确保按钮在小屏幕上不太窄 */
+    max-width: 120px; /* 设置按钮最大宽度 */
     padding: 10px 15px;
     background-color: #f9f9f9;
     border: 1px solid #ddd;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    text-align: center;
+    white-space: nowrap; /* 防止按钮文字换行 */
+    border-radius: 4px;
 }
 
 .filters button:hover {
@@ -270,8 +276,12 @@ h2 {
 
 /* 响应式设计 */
 @media (max-width: 768px) {
+    .filters {
+        gap: 5px; /* 缩小间距，适配小屏幕 */
+    }
+
     .filters button {
-        flex: 1 1 auto;
+        flex: 1; /* 均分宽度，确保按钮在一行显示 */
     }
 
     .action-buttons {
