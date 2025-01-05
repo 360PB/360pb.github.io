@@ -3,12 +3,11 @@ class DataManager {
         this.cache = new Map();
         this.allData = [];
         this.initialized = false;
-        this.loadingOverlay = document.getElementById('loading-overlay'); // 加载遮罩层
-        this.loadingText = document.getElementById('loading-text');     // 加载进度文本
-        this.closeButton = document.getElementById('loading-close-btn'); // 手动关闭按钮
+        this.loadingOverlay = document.getElementById('loading-overlay');
+        this.loadingText = document.getElementById('loading-text');
+        this.closeButton = document.getElementById('loading-close-btn');
     }
 
-    // 显示加载遮罩层
     showLoading() {
         if (this.loadingOverlay) {
             this.loadingOverlay.classList.add('visible');
@@ -20,9 +19,13 @@ class DataManager {
         }
     }
 
-    // 隐藏加载遮罩层
     hideLoading() {
         if (this.loadingOverlay) {
+            // 更新加载完成提示
+            if (this.loadingText) {
+                this.loadingText.textContent = '加载完成！';
+            }
+
             // 显示关闭按钮
             if (this.closeButton) {
                 this.closeButton.style.display = 'block';
@@ -38,7 +41,6 @@ class DataManager {
         }
     }
 
-    // 更新加载进度
     updateLoadingProgress(current, total) {
         if (this.loadingText) {
             const percentage = Math.round((current / total) * 100);
@@ -60,7 +62,7 @@ class DataManager {
             }
             const text = await listResponse.text();
             const jsonFiles = text.split('\n').filter(name => name.trim() !== '');
-
+            
             console.log('找到以下数据文件:', jsonFiles);
 
             if (jsonFiles.length === 0) {
@@ -73,7 +75,7 @@ class DataManager {
                 try {
                     console.log(`正在加载文件: data/${fileName}`);
                     const data = await this.loadFile(`data/${fileName}`);
-
+                    
                     // 检查数据格式
                     if (Array.isArray(data)) {
                         this.allData.push(...data);
@@ -134,9 +136,6 @@ class DataManager {
             throw error;
         }
     }
-}
-
-
 
     async getPageData(page, itemsPerPage, filter = 'all') {
         await this.initialize();
@@ -156,7 +155,7 @@ class DataManager {
 
     async search(keyword) {
         await this.initialize();
-
+        
         return this.allData.filter(item =>
             item.title.toLowerCase().includes(keyword.toLowerCase())
         );
@@ -164,17 +163,16 @@ class DataManager {
 
     async getTotalItems(filter = 'all') {
         await this.initialize();
-
+        
         if (filter === 'all') {
             return this.allData.length;
         }
-
+        
         return this.allData.filter(item =>
             item.source_category_id.toString() === filter
         ).length;
     }
 }
-
 // 全局变量
 let itemsPerPage = 15; // 默认每页显示的卡片数量（PC端）
 let currentPage = 1;
@@ -185,7 +183,7 @@ let currentFilter = 'all';
 document.addEventListener('DOMContentLoaded', () => {
     // 根据设备类型设置每页显示的卡片数量
     setDefaultItemsPerPage();
-
+    
     fetchDataAndDisplay();
     setupEventListeners();
     setupItemsPerPageSelector();
@@ -194,8 +192,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function setDefaultItemsPerPage() {
     // 检测设备类型
-    const isMobile = window.innerWidth <= 768; // 判断屏幕宽度是否小于等于768px
-    itemsPerPage = isMobile ? 6 : 15; // 手机端默认6个，PC端默认12个
+    const isMobile = window.innerWidth <= 768;
+    itemsPerPage = isMobile ? 6 : 15;
 
     // 同步更新下拉框的默认选项
     const itemsPerPageSelect = document.getElementById('items-per-page-select');
@@ -213,7 +211,6 @@ function setupItemsPerPageSelector() {
     });
 }
 
-// 修改 fetchDataAndDisplay 函数
 async function fetchDataAndDisplay() {
     const dataManager = new DataManager();
     try {
@@ -240,50 +237,40 @@ function setupEventListeners() {
     document.querySelector('.pagination').addEventListener('click', handlePaginationClick);
 }
 
-// 移除重复的事件监听代码，保留一个统一的处理函数
 function handlePaginationClick(event) {
     if (event.target.tagName !== 'BUTTON') return;
 
-    // 记住当前的滚动位置
     const resourceList = document.getElementById('resource-list');
     const listTop = resourceList.offsetTop;
-
+    
     const buttonText = event.target.textContent;
     const totalPages = Math.ceil(filteredData.length / itemsPerPage);
     let newPage = currentPage;
-
-    switch (buttonText) {
+    
+    switch(buttonText) {
         case '上一页':
-            if (currentPage > 1) {
-                newPage = currentPage - 1;
-            }
+            if (currentPage > 1) newPage = currentPage - 1;
             break;
         case '下一页':
-            if (currentPage < totalPages) {
-                newPage = currentPage + 1;
-            }
+            if (currentPage < totalPages) newPage = currentPage + 1;
             break;
         default:
             const pageNum = parseInt(buttonText);
-            if (!isNaN(pageNum)) {
-                newPage = pageNum;
-            }
+            if (!isNaN(pageNum)) newPage = pageNum;
     }
-
+    
     if (newPage !== currentPage) {
         currentPage = newPage;
         displayTable();
-        // 滚动到资源列表的顶部位置
         window.scrollTo({
             top: listTop,
-            behavior: 'smooth' // 使用平滑滚动
+            behavior: 'smooth'
         });
     }
-
-    event.preventDefault(); // 阻止默认行为
+    
+    event.preventDefault();
 }
 
-// 添加排序功能
 let currentSort = 'desc'; // 默认降序
 
 function sortTable(ascending) {
@@ -303,16 +290,13 @@ function searchTable() {
 }
 
 function downloadData() {
-    // 定义CSV列标题
     const columns = ['序号', '文件名', '夸克链接', '更新时间'];
-    // 将列标题转换为CSV格式
     const csvData = [columns.join(',')];
 
-    // 将数据添加到CSV
     filteredData.forEach((item, index) => {
         const updateTime = new Date(item.update_time * 1000).toLocaleString();
         const rowData = [
-            index + 1, // 序号从1开始
+            index + 1,
             item.title,
             item.url,
             updateTime
@@ -320,7 +304,6 @@ function downloadData() {
         csvData.push(rowData);
     });
 
-    // 创建CSV文件并下载
     const blob = new Blob([csvData.join('\n')], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -367,27 +350,22 @@ function updateFilterButtons() {
     });
 }
 
-// 更新分页逻辑以保持最初的显示
 function updatePagination() {
     const pagination = document.getElementById('pagination');
     pagination.innerHTML = '';
 
     const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+    if (totalPages <= 1) return;
 
-    if (totalPages <= 1) return; // 如果只有一页，不显示分页
-
-    // 添加"上一页"按钮
     const prevButton = document.createElement('button');
     prevButton.textContent = '上一页';
     prevButton.disabled = currentPage === 1;
     pagination.appendChild(prevButton);
 
-    // 计算要显示的页码范围
     const maxVisibleButtons = 3;
     let startPage = Math.max(1, currentPage - 1);
     let endPage = Math.min(totalPages, startPage + 2);
 
-    // 调整起始页码，确保始终显示3个页码（如果总页数足够）
     if (endPage - startPage + 1 < maxVisibleButtons && totalPages >= maxVisibleButtons) {
         if (currentPage === totalPages) {
             startPage = totalPages - 2;
@@ -396,11 +374,9 @@ function updatePagination() {
         }
     }
 
-    // 确保页码范围有效
     startPage = Math.max(1, startPage);
     endPage = Math.min(totalPages, endPage);
 
-    // 显示第一页和省略号
     if (startPage > 1) {
         const firstButton = document.createElement('button');
         firstButton.textContent = '1';
@@ -414,7 +390,6 @@ function updatePagination() {
         }
     }
 
-    // 添加页码按钮
     for (let i = startPage; i <= endPage; i++) {
         const pageButton = document.createElement('button');
         pageButton.textContent = i;
@@ -424,7 +399,6 @@ function updatePagination() {
         pagination.appendChild(pageButton);
     }
 
-    // 显示最后一页和省略号
     if (endPage < totalPages) {
         if (endPage < totalPages - 1) {
             const ellipsis = document.createElement('span');
@@ -438,16 +412,10 @@ function updatePagination() {
         pagination.appendChild(lastButton);
     }
 
-    // 添加"下一页"按钮
     const nextButton = document.createElement('button');
     nextButton.textContent = '下一页';
     nextButton.disabled = currentPage === totalPages;
     pagination.appendChild(nextButton);
-
-    // 移除所有已存在的点击事件监听器
-    pagination.querySelectorAll('button').forEach(button => {
-        button.removeEventListener('click', handlePaginationClick);
-    });
 }
 
 function displayTable() {
@@ -455,7 +423,6 @@ function displayTable() {
     const fragment = document.createDocumentFragment();
     let sortedData = filteredData;
 
-    // 默认按更新时间降序排序
     if (!currentSort || currentSort === 'desc') {
         sortedData.sort((a, b) => b.update_time - a.update_time);
     } else if (currentSort === 'asc') {
@@ -465,8 +432,6 @@ function displayTable() {
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     const pageData = sortedData.slice(startIndex, endIndex);
-
-    console.log(`Displaying page ${currentPage} with items ${startIndex} to ${endIndex - 1}`);
 
     pageData.forEach(item => {
         const card = document.createElement('div');
@@ -488,46 +453,38 @@ function displayTable() {
 class BubbleEffect {
     constructor() {
         this.container = document.getElementById('bubbles-container');
-        this.bubbleCount = 30; // 增加气泡数量
+        this.bubbleCount = 30;
         this.init();
     }
 
     init() {
-        // 初始化时创建气泡
         this.createBubbles();
-        // 定期检查和补充气泡
         setInterval(() => this.checkAndReplenishBubbles(), 2000);
     }
 
     createBubble() {
         const bubble = document.createElement('div');
         bubble.className = 'bubble';
-
-        // 增加气泡大小 (30-90px)
+        
         const size = Math.random() * 60 + 30;
         bubble.style.width = `${size}px`;
         bubble.style.height = `${size}px`;
-
-        // 随机位置
+        
         const startX = Math.random() * 100;
         bubble.style.left = `${startX}%`;
-
-        // 随机动画持续时间 (4-8秒)
+        
         const duration = Math.random() * 4 + 4;
         bubble.style.setProperty('--duration', `${duration}s`);
-
-        // 随机透明度 (0.1-0.7)
+        
         const opacity = Math.random() * 0.6 + 0.1;
         bubble.style.setProperty('--opacity', opacity);
-
-        // 添加到容器
+        
         this.container.appendChild(bubble);
-
-        // 动画结束后移除气泡
+        
         bubble.addEventListener('animationend', () => {
             bubble.remove();
         });
-
+        
         return bubble;
     }
 
@@ -540,7 +497,7 @@ class BubbleEffect {
     checkAndReplenishBubbles() {
         const currentBubbles = this.container.getElementsByClassName('bubble').length;
         const bubblesNeeded = this.bubbleCount - currentBubbles;
-
+        
         if (bubblesNeeded > 0) {
             for (let i = 0; i < bubblesNeeded; i++) {
                 this.createBubble();
