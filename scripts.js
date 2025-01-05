@@ -64,22 +64,34 @@ class DataManager {
 
 
 
-    async loadFile(fileName) {
-        if (this.cache.has(fileName)) {
-            return this.cache.get(fileName);
-        }
+	async loadFile(fileName) {
+		if (this.cache.has(fileName)) {
+			return this.cache.get(fileName);
+		}
+	
+		try {
+			console.log(`发起请求: ${fileName}`);
+			const response = await fetch(fileName);
+			if (!response.ok) {
+				throw new Error(`HTTP error! status: ${response.status}`);
+			}
+			const data = await response.json();
+	
+			// 解析数据
+			const tableData = data.find(item => item.type === 'table' && item.name === 'qf_source');
+			if (tableData && Array.isArray(tableData.data)) {
+				this.cache.set(fileName, tableData.data);
+				return tableData.data;
+			} else {
+				console.error(`文件 ${fileName} 的数据格式不正确:`, data);
+				return [];
+			}
+		} catch (error) {
+			console.error(`加载文件 ${fileName} 失败:`, error);
+			throw error;
+		}
+	}
 
-        try {
-            const response = await fetch(`data/${fileName}`);
-            if (!response.ok) throw new Error(`Failed to load file ${fileName}`);
-            const data = await response.json();
-            this.cache.set(fileName, data);
-            return data;
-        } catch (error) {
-            console.error(`加载文件 ${fileName} 失败:`, error);
-            return [];
-        }
-    }
 
     async getPageData(page, itemsPerPage, filter = 'all') {
         await this.initialize();
