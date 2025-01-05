@@ -172,7 +172,7 @@ function updatePagination() {
     pagination.appendChild(prevButton);
 
     // 显示页码按钮
-    const maxVisibleButtons = 5; // 最多显示的页码按钮数量
+    const maxVisibleButtons = 3; // 最多显示的页码按钮数量
     let startPage = Math.max(1, currentPage - Math.floor(maxVisibleButtons / 2));
     let endPage = Math.min(totalPages, startPage + maxVisibleButtons - 1);
 
