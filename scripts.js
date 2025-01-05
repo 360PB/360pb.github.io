@@ -1,4 +1,4 @@
-const itemsPerPage = 10;
+const itemsPerPage = 6;
 let currentPage = 1;
 let originalData = [];
 let filteredData = [];
