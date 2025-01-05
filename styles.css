@@ -2,7 +2,10 @@
 
 * {
     margin: 0;
-    padding: 0;
+    padding: 20px;
+	margin: 0 auto;
+	max-width: 804px;
+    box-sizing: border-box;
     box-sizing: border-box; /* 添加box-sizing属性 */
 }
 
@@ -62,7 +65,7 @@ body {
 .filters {
     margin-bottom: 20px;
     display: flex; /* 使用flex布局 */
-    justify-content: center; /* 居中对齐 */
+    /*justify-content: center; /* 居中对齐 */
 }
 
 .filters button {
