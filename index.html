@@ -7,7 +7,12 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-	<div id="background-animation"></div>
+    <div class="bubble-container">
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <!-- 可以添加更多气泡 -->
+    </div>
     <h1>资源库</h1>
     <h2>数据源: <a href="https://panhub.fun/" target="_blank">https://panhub.fun/</a></h2>
     <div class="filters">
@@ -20,7 +25,7 @@
     </div>
     <input type="text" id="search-input" placeholder="搜索资源" oninput="searchTable()">
     <button onclick="downloadData()">下载数据表</button>
-	<button onclick="downloadLinks()">仅下载链接</button>
+    <button onclick="downloadLinks()">仅下载链接</button>
     <div id="resource-list" class="resource-list">
         <!-- 资源卡片将通过 JavaScript 动态生成 -->
     </div>
