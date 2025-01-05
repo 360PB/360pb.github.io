@@ -1,4 +1,4 @@
-let itemsPerPage = 12; // 默认每页显示的卡片数量（PC端）
+let itemsPerPage = 1; // 默认每页显示的卡片数量（PC端）
 let currentPage = 1;
 let originalData = [];
 let filteredData = [];
@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function setDefaultItemsPerPage() {
     // 检测设备类型
     const isMobile = window.innerWidth <= 768; // 判断屏幕宽度是否小于等于768px
-    itemsPerPage = isMobile ? 6 : 12; // 手机端默认6个，PC端默认12个
+    itemsPerPage = isMobile ? 6 : 15; // 手机端默认6个，PC端默认12个
 
     // 同步更新下拉框的默认选项
     const itemsPerPageSelect = document.getElementById('items-per-page-select');
