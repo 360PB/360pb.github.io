@@ -193,7 +193,7 @@ function updatePagination() {
     pagination.appendChild(firstPageButton);
 
     // 计算当前页附近的页码范围
-    const maxButtonsToShow = 3; // 最多显示的页码按钮数量
+    const maxButtonsToShow = 5; // 最多显示的页码按钮数量
     let startPage = currentPage - Math.floor((maxButtonsToShow - 1) / 2);
     let endPage = currentPage + Math.floor((maxButtonsToShow - 1) / 2);
 
