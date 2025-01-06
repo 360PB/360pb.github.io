@@ -50,6 +50,7 @@ class DataManager {
 
     async initialize() {
         if (this.initialized) return;
+		const failedFiles = []; // 用于记录加载失败的文件
 
         try {
             this.showLoading();
@@ -91,10 +92,21 @@ class DataManager {
                     this.updateLoadingProgress(loadedFiles, jsonFiles.length);
                 } catch (error) {
                     console.error(`加载文件 ${fileName} 失败:`, error);
+					failedFiles.push(fileName); // 记录失败的文件
                 }
             }
 
             console.log(`总共加载了 ${this.allData.length} 条数据`);
+			// 检查是否有加载失败的文件
+			if (failedFiles.length > 0) {
+				console.warn(`以下文件加载失败: ${failedFiles.join(', ')}`);
+				this.loadingText.textContent = `部分文件加载失败: ${failedFiles.join(', ')}`;
+				this.closeButton.style.display = 'block'; // 显示关闭按钮
+				this.closeButton.addEventListener('click', () => {
+					this.loadingOverlay.classList.remove('visible');
+				});
+				return; // 不调用 hideLoading，保留加载界面
+			}
 
             if (this.allData.length === 0) {
                 throw new Error('未能成功加载任何数据');
@@ -105,6 +117,10 @@ class DataManager {
         } catch (error) {
             console.error('初始化失败:', error);
             this.loadingText.textContent = `加载失败: ${error.message}`;
+			this.closeButton.style.display = 'block'; // 显示关闭按钮
+			this.closeButton.addEventListener('click', () => {
+				this.loadingOverlay.classList.remove('visible');
+			});
             throw error;
         }
     }
