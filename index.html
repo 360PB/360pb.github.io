@@ -7,52 +7,34 @@
     <link rel="stylesheet" href="styles.css">
     <style>
         /* 微信提示样式 */
-        #weixin-tip {
+        #wechat-alert {
             display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: white;
-            z-index: 1000;
-            text-align: center;
-            padding-top: 20%;
-        }
-        #weixin-tip p {
-            font-size: 2em;
-            color: #333;
-            padding: 0 20px;
-        }
-
-        /* 加载动画样式 */
-        #loading-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: white;
-            display: flex;
+            background-color: rgba(0, 0, 0, 0.5); /* 半透明背景 */
             justify-content: center;
             align-items: center;
-            z-index: 9999;
-            font-size: 1.5em;
-            color: #333;
+            z-index: 1000;
+        }
+        #wechat-alert .content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.2em;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 添加阴影 */
         }
     </style>
 </head>
 <body>
-    <!-- 加载动画 -->
-    <div id="loading-screen">
-        <p>加载中...</p>
-    </div>
-
     <!-- 微信提示 -->
-    <div id="weixin-tip">
-        <p>
-            请点击右上角“...”<br>并选择“在浏览器打开”。
-        </p>
+    <div id="wechat-alert">
+        <div class="content">
+            您正在使用微信浏览器，请使用浏览器打开此页面以获得更好的体验。
+        </div>
     </div>
 
     <div class="wrapper">
@@ -66,14 +48,14 @@
         <div class="loading-content">
             <div class="loading-spinner"></div>
             <div id="loading-text">正在加载数据... 0%</div>
-            <button id="loading-close-btn" class="loading-close-btn">关闭</button>
+			<button id="loading-close-btn" class="loading-close-btn">关闭</button>
         </div>
     </div>
 
     <div class="content">
         <h1>资源库</h1>
         <h2>数据源: <a href="https://panhub.fun/" target="_blank">https://panhub.fun/</a></h2>
-        
+
         <!-- 筛选按钮 -->
         <div class="filters">
             <button onclick="filterSelection('all')" class="active">全部</button>
@@ -114,24 +96,21 @@
     </div>
 
     <script>
-        window.onload = function () {
-            // 隐藏加载动画
-            document.getElementById('loading-screen').style.display = 'none';
-
-            // 检测是否在微信环境中打开
+        // 检测是否为微信浏览器
+        function isWeChat() {
             var ua = navigator.userAgent.toLowerCase();
-            var isWeixin = ua.indexOf('micromessenger') !== -1; // 判断是否为微信浏览器
+            return ua.match(/micromessenger/i) === "micromessenger";
+        }
 
-            if (isWeixin) {
-                // 如果是微信浏览器，显示提示信息
-                document.getElementById('weixin-tip').style.display = 'block';
-            } else {
-                // 如果不是微信浏览器，直接跳转
-                window.location.href = "https://360pb.github.io/"; // 替换为你的目标 URL
+        // 页面加载后执行逻辑
+        window.onload = function () {
+            if (isWeChat()) {
+                // 如果是微信浏览器，显示提示框
+                document.getElementById("wechat-alert").style.display = "flex";
             }
         };
     </script>
 
-    <script src="scripts.js" async></script>
+    <script src="scripts.js"></script>
 </body>
 </html>
