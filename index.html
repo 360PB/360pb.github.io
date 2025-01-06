@@ -5,58 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>资源库</title>
     <link rel="stylesheet" href="styles.css">
-    <style>
-        /* 微信提示样式 */
-        #wechat-alert {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5); /* 半透明背景 */
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-        #wechat-alert .content {
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            text-align: center;
-            font-size: 1.2em;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 添加阴影 */
-        }
-    </style>
 </head>
 <body>
-    <!-- 微信提示 -->
-    <div id="wechat-alert">
-        <div class="content">
-            您正在使用微信浏览器，请使用浏览器打开此页面以获得更好的体验。
-        </div>
-    </div>
-
     <div class="wrapper">
         <div id="bubbles-container">
             <!-- 气泡将通过 JavaScript 动态生成 -->
         </div>
     </div>
-
-    <!-- 加载进度提示 -->
     <div id="loading-overlay" class="loading-overlay">
         <div class="loading-content">
             <div class="loading-spinner"></div>
             <div id="loading-text">正在加载数据... 0%</div>
-			<button id="loading-close-btn" class="loading-close-btn">关闭</button>
+            <button id="loading-close-btn" class="loading-close-btn">关闭</button>
         </div>
     </div>
-
     <div class="content">
         <h1>资源库</h1>
-        <h2>数据源: <a href="https://panhub.fun/" target="_blank">https://panhub.fun/</a></h2>
-
-        <!-- 筛选按钮 -->
+        <h2>数据源: <a href="https://panhub.fun/" target="_blank">https://panhub.fun/</a></h2> 
         <div class="filters">
             <button onclick="filterSelection('all')" class="active">全部</button>
             <button onclick="filterSelection('1')">短剧</button>
@@ -64,15 +29,10 @@
             <button onclick="filterSelection('8')">游戏</button>
             <button onclick="filterSelection('9')">软件</button>
         </div>
-
-        <!-- 搜索框 -->
         <input type="text" id="search-input" placeholder="搜索资源" oninput="searchTable()">
-
-        <!-- 操作按钮区域 -->
         <div class="action-buttons">
             <button onclick="downloadData()">下载数据表</button>
             <button onclick="downloadLinks()">仅下载链接</button>
-            <!-- 每页显示数量设置 -->
             <div class="items-per-page">
                 <label for="items-per-page-select">每页显示:</label>
                 <select id="items-per-page-select">
@@ -83,34 +43,13 @@
                 </select>
             </div>
         </div>
-
-        <!-- 资源卡片列表 -->
         <div id="resource-list" class="resource-list">
             <!-- 资源卡片将通过 JavaScript 动态生成 -->
         </div>
-
-        <!-- 分页 -->
         <div class="pagination" id="pagination">
             <!-- 分页按钮将通过 JavaScript 动态生成 -->
         </div>
     </div>
-
-    <script>
-        // 检测是否为微信浏览器
-        function isWeChat() {
-            var ua = navigator.userAgent.toLowerCase();
-            return ua.match(/micromessenger/i) === "micromessenger";
-        }
-
-        // 页面加载后执行逻辑
-        window.onload = function () {
-            if (isWeChat()) {
-                // 如果是微信浏览器，显示提示框
-                document.getElementById("wechat-alert").style.display = "flex";
-            }
-        };
-    </script>
-
     <script src="scripts.js"></script>
 </body>
 </html>
