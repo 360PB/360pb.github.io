@@ -24,9 +24,30 @@
             color: #333;
             padding: 0 20px;
         }
+
+        /* 加载动画样式 */
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            font-size: 1.5em;
+            color: #333;
+        }
     </style>
 </head>
 <body>
+    <!-- 加载动画 -->
+    <div id="loading-screen">
+        <p>加载中...</p>
+    </div>
+
     <!-- 微信提示 -->
     <div id="weixin-tip">
         <p>
@@ -93,21 +114,24 @@
     </div>
 
     <script>
-        // 检测是否在微信环境中打开
-        var ua = navigator.userAgent.toLowerCase();
-        var isWeixin = ua.indexOf('micromessenger') !== -1; // 判断是否为微信浏览器
+        window.onload = function () {
+            // 隐藏加载动画
+            document.getElementById('loading-screen').style.display = 'none';
 
-        if (isWeixin) {
-            // 如果是微信浏览器，显示提示信息
-            document.getElementById('weixin-tip').style.display = 'block';
-        } else {
-            // 如果不是微信浏览器，跳转到目标页面
-            // 替换 "TARGET_URL" 为目标页面的实际 URL
-            window.location.href = "https://360pb.github.io/"; // 替换为你的目标 URL
-        }
+            // 检测是否在微信环境中打开
+            var ua = navigator.userAgent.toLowerCase();
+            var isWeixin = ua.indexOf('micromessenger') !== -1; // 判断是否为微信浏览器
+
+            if (isWeixin) {
+                // 如果是微信浏览器，显示提示信息
+                document.getElementById('weixin-tip').style.display = 'block';
+            } else {
+                // 如果不是微信浏览器，直接跳转
+                window.location.href = "https://360pb.github.io/"; // 替换为你的目标 URL
+            }
+        };
     </script>
 
-    <script src="scripts.js"></script>
-    <script src="bubbles.js"></script>
+    <script src="scripts.js" async></script>
 </body>
 </html>
