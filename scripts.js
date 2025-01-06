@@ -23,7 +23,7 @@ class DataManager {
         if (this.loadingOverlay) {
             // 更新加载完成提示
             if (this.loadingText) {
-                this.loadingText.textContent = '加载完成！';
+                this.loadingText.textContent = `加载完成！成功加载 ${this.allData.length} 条数据`;
             }
 
             // 显示关闭按钮
