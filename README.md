@@ -15,6 +15,7 @@
 
 ## 项目结构
 
+```
 project/
 ├── index.html // 主页面
 ├── styles.css // 样式文件
@@ -23,7 +24,7 @@ project/
 │ ├── file_list.txt // 数据文件列表
 │ └── *.json // JSON数据文件
 └── README.md // 说明文档
-
+```
 
 
 ## 示例页面
