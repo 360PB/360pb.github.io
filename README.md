@@ -1,6 +1,7 @@
 # 网盘资源站
 
-一个基于 HTML、CSS 和 JavaScript 开发的资源列表展示系统，支持数据加载、分页显示、搜索筛选等功能。
+一个可使用GitHub Pages部署基于 HTML、CSS 和 JavaScript 开发的资源列表展示系统
+
 
 ## 功能特点
 
