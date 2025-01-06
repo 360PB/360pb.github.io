@@ -3,7 +3,7 @@ name: Update File List
 on:
   push:
     branches:
-      - main  # 或者您的默认分支
+      - main  # 触发工作流的分支
     paths:
       - 'data/*.json'  # 监控 data 目录下的 JSON 文件变化
 
@@ -15,6 +15,11 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
+    - name: Configure Git user
+      run: |
+        git config --local user.name "github-actions[bot]"
+        git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
     - name: Pull latest changes
       run: git pull origin main  # 确保拉取最新的更改
 
@@ -23,12 +28,10 @@ jobs:
 
     - name: Commit changes
       run: |
-        git config --local user.name "github-actions[bot]"
-        git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
         git add data/file_list.txt
         git commit -m "Update file_list.txt" || echo "No changes to commit"
 
     - name: Push changes
-      uses: ad-m/github-push-action@v0.6.0
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        git pull --rebase origin main  # 确保与远程分支同步
+        git push origin main
