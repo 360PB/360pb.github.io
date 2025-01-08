@@ -22,11 +22,11 @@ class DataManager {
         }
     }
 
-    hideLoading() {
-        if (this.loadingOverlay) {
-            this.loadingOverlay.classList.remove('visible');
-        }
-    }
+     //hideLoading() {
+     //    if (this.loadingOverlay) {
+     //        this.loadingOverlay.classList.remove('visible');
+     //    }
+     //}
 
     updateLoadingStatus(message) {
         if (this.loadingText) {

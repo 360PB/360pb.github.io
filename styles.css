@@ -16,8 +16,8 @@ body {
     font-size: 14px; /* 增加字体大小 */
     font-weight: bold; /* 字体加粗 */
     color: #ffffff; /* 使用绿色表示加载成功 */
-    background-color: #007bff; /* 设置浅色背景 */
-    border-radius: 4px; /* 圆角边框 */
+    #background-color: #007bff; /* 设置浅色背景 */
+    #border-radius: 4px; /* 圆角边框 */
     padding: 8px 20px; /* 内边距 */
     text-align: center; /* 水平居中 */
     margin-top: auto; /* 与上一个元素的间距 */
@@ -316,6 +316,7 @@ h2 {
     border-radius: 4px;
     cursor: pointer;
     transition: all 0.3s ease;
+    white-space: nowrap; /* 添加防止文字换行的样式 */
 }
 
 .pagination button:hover:not(:disabled) {
