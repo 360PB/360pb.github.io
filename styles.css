@@ -11,35 +11,24 @@ body {
     margin: 0;
     background-color: #f4f4f4;
 }
-/* 关闭按钮样式 */
-.loading-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* 水平居中 */
-    justify-content: center; /* 垂直居中 */
-	background-color: white;
-	padding: 20px; /* 内边距 */
-    border-radius: 8px; /* 圆角 */
-    text-align: center; /* 文本居中 */
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* 阴影效果 */
-}
-.loading-close-btn {
-    display: none; /* 默认隐藏 */
-    margin-top: 20px;
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-	text-align: center; /* 文字居中 */
-    font-size: 14px;
+
+#data-count {
+    font-size: 14px; /* 增加字体大小 */
+    font-weight: bold; /* 字体加粗 */
+    color: #ffffff; /* 使用绿色表示加载成功 */
+    background-color: #007bff; /* 设置浅色背景 */
+    border-radius: 4px; /* 圆角边框 */
+    padding: 8px 20px; /* 内边距 */
+    text-align: center; /* 水平居中 */
+    margin-top: auto; /* 与上一个元素的间距 */
+    transition: opacity 0.5s ease; /* 渐变显示动画 */
+    opacity: 0; /* 默认透明 */
 }
 
-.loading-close-btn:hover {
-    background-color: #0056b3;
+/* 当数据加载完成时，添加一个类来显示文本 */
+#data-count.loaded {
+    opacity: 1; /* 渐变显示 */
 }
-
 
 /* 加载遮罩层样式 */
 .loading-overlay {

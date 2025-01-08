@@ -60,7 +60,16 @@
         </div>        
     </div>
 
-    <!-- 原始页面内容 -->
+    <div class="wrapper">
+        <div id="bubbles-container">
+            <!-- 气泡将通过 JavaScript 动态生成 -->
+        </div>
+    </div>
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="loading-spinner"></div>
+        <div id="loading-text">正在加载数据...</div>
+    </div>
+    
     <div class="content">
         <h1>资源库</h1>
         <h2>数据源: <a href="https://panhub.fun/" target="_blank">https://panhub.fun/</a></h2> 
@@ -75,6 +84,7 @@
         <div class="action-buttons">
             <button onclick="downloadData()">下载数据表</button>
             <button onclick="downloadLinks()">仅下载链接</button>
+            <span id="data-count">已加载数据：0</span> <!-- 用于动态显示数据数量 -->
             <div class="items-per-page">
                 <label for="items-per-page-select">每页显示:</label>
                 <select id="items-per-page-select">

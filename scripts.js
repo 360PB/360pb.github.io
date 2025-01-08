@@ -5,123 +5,111 @@ class DataManager {
         this.initialized = false;
         this.loadingOverlay = document.getElementById('loading-overlay');
         this.loadingText = document.getElementById('loading-text');
-        this.closeButton = document.getElementById('loading-close-btn');
+        this.dataCountDisplay = document.getElementById('data-count');
+        
+        // 添加初始化状态检查
+        if (!this.loadingOverlay || !this.loadingText || !this.dataCountDisplay) {
+            console.error('必要的 DOM 元素未找到');
+            throw new Error('Required DOM elements not found');
+        }
     }
 
     showLoading() {
         if (this.loadingOverlay) {
             this.loadingOverlay.classList.add('visible');
-        }
-
-        // 显示关闭按钮（初始隐藏）
-        if (this.closeButton) {
-            this.closeButton.style.display = 'none';
+            this.loadingText.textContent = '正在加载数据...';
+            this.dataCountDisplay.textContent = '已加载数据：0';
         }
     }
 
     hideLoading() {
         if (this.loadingOverlay) {
-            // 更新加载完成提示
-            if (this.loadingText) {
-                this.loadingText.textContent = `加载完成！成功加载 ${this.allData.length} 条数据`;
-            }
-
-            // 显示关闭按钮
-            if (this.closeButton) {
-                this.closeButton.style.display = 'block';
-                this.closeButton.addEventListener('click', () => {
-                    this.loadingOverlay.classList.remove('visible');
-                });
-            }
-
-            // 设置 2 秒后自动关闭
-            setTimeout(() => {
-                this.loadingOverlay.classList.remove('visible');
-            }, 2000);
+            this.loadingOverlay.classList.remove('visible');
         }
     }
 
-    updateLoadingProgress(current, total) {
+    updateLoadingStatus(message) {
         if (this.loadingText) {
-            const percentage = Math.round((current / total) * 100);
-            this.loadingText.textContent = `正在加载数据... ${percentage}%`;
+            this.loadingText.textContent = message;
         }
     }
 
     async initialize() {
-        if (this.initialized) return;
-		const failedFiles = []; // 用于记录加载失败的文件
+        if (this.initialized) {
+            console.log('数据管理器已经初始化');
+            return;
+        }
 
         try {
             this.showLoading();
             console.log('开始初始化数据管理器...');
 
-            // 加载文件列表
-            const listResponse = await fetch('data/file_list.txt');
-            if (!listResponse.ok) {
-                throw new Error(`无法加载文件列表: ${listResponse.status} ${listResponse.statusText}`);
+            // 先检查文件列表是否存在
+            const listResponse = await this.checkFileExists('data/file_list.txt');
+            if (!listResponse) {
+                throw new Error('文件列表不存在');
             }
+
             const text = await listResponse.text();
             const jsonFiles = text.split('\n').filter(name => name.trim() !== '');
-            
+
             console.log('找到以下数据文件:', jsonFiles);
 
             if (jsonFiles.length === 0) {
                 throw new Error('文件列表为空');
             }
 
-            // 加载所有 JSON 文件
-            let loadedFiles = 0;
+            let loadedCount = 0;
             for (const fileName of jsonFiles) {
                 try {
                     console.log(`正在加载文件: data/${fileName}`);
                     const data = await this.loadFile(`data/${fileName}`);
-                    
-                    // 检查数据格式
                     if (Array.isArray(data)) {
                         this.allData.push(...data);
+                        loadedCount += data.length;
+                        this.updateDataCount(loadedCount);
                         console.log(`成功加载 ${data.length} 条数据从 ${fileName}`);
-                    } else if (data.data && Array.isArray(data.data)) {
-                        this.allData.push(...data.data);
-                        console.log(`成功加载 ${data.data.length} 条数据从 ${fileName}`);
-                    } else {
-                        console.error(`文件 ${fileName} 的数据格式不正确:`, data);
                     }
-
-                    loadedFiles++;
-                    this.updateLoadingProgress(loadedFiles, jsonFiles.length);
                 } catch (error) {
                     console.error(`加载文件 ${fileName} 失败:`, error);
-					failedFiles.push(fileName); // 记录失败的文件
+                    this.updateLoadingStatus(`加载文件 ${fileName} 失败: ${error.message}`);
                 }
             }
 
-            console.log(`总共加载了 ${this.allData.length} 条数据`);
-			// 检查是否有加载失败的文件
-			if (failedFiles.length > 0) {
-				console.warn(`以下文件加载失败: ${failedFiles.join(', ')}`);
-				this.loadingText.textContent = `部分文件加载失败: ${failedFiles.join(', ')}`;
-				this.closeButton.style.display = 'block'; // 显示关闭按钮
-				this.closeButton.addEventListener('click', () => {
-					this.loadingOverlay.classList.remove('visible');
-				});
-				return; // 不调用 hideLoading，保留加载界面
-			}
-
             if (this.allData.length === 0) {
-                throw new Error('未能成功加载任何数据');
+                throw new Error('没有成功加载任何数据');
             }
 
+            console.log(`总共加载了 ${this.allData.length} 条数据`);
             this.initialized = true;
-            this.hideLoading();
+            this.updateLoadingStatus(`加载完成！成功加载 ${this.allData.length} 条数据`);
+            
         } catch (error) {
             console.error('初始化失败:', error);
-            this.loadingText.textContent = `加载失败: ${error.message}`;
-			this.closeButton.style.display = 'block'; // 显示关闭按钮
-			this.closeButton.addEventListener('click', () => {
-				this.loadingOverlay.classList.remove('visible');
-			});
+            this.updateLoadingStatus(`加载失败: ${error.message}`);
             throw error;
+        } finally {
+            this.hideLoading();
+        }
+    }
+
+    async checkFileExists(filePath) {
+        try {
+            const response = await fetch(filePath);
+            if (!response.ok) {
+                console.error(`文件不存在: ${filePath}`);
+                return null;
+            }
+            return response;
+        } catch (error) {
+            console.error(`检查文件存在性失败: ${filePath}`, error);
+            return null;
+        }
+    }
+
+    updateDataCount(count) {
+        if (this.dataCountDisplay) {
+            this.dataCountDisplay.textContent = `已加载数据：${count}`;
         }
     }
 
@@ -130,27 +118,20 @@ class DataManager {
             return this.cache.get(fileName);
         }
 
-        try {
-            console.log(`发起请求: ${fileName}`);
-            const response = await fetch(fileName);
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            const data = await response.json();
-
-            // 解析数据
-            const tableData = data.find(item => item.type === 'table' && item.name === 'qf_source');
-            if (tableData && Array.isArray(tableData.data)) {
-                this.cache.set(fileName, tableData.data);
-                return tableData.data;
-            } else {
-                console.error(`文件 ${fileName} 的数据格式不正确:`, data);
-                return [];
-            }
-        } catch (error) {
-            console.error(`加载文件 ${fileName} 失败:`, error);
-            throw error;
+        const response = await fetch(fileName);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
+
+        const data = await response.json();
+        const tableData = data.find(item => item.type === 'table' && item.name === 'qf_source');
+        
+        if (tableData && Array.isArray(tableData.data)) {
+            this.cache.set(fileName, tableData.data);
+            return tableData.data;
+        }
+        
+        throw new Error(`文件 ${fileName} 的数据格式不正确`);
     }
 
     async getPageData(page, itemsPerPage, filter = 'all') {
@@ -189,6 +170,8 @@ class DataManager {
         ).length;
     }
 }
+
+
 // 全局变量
 let itemsPerPage = 15; // 默认每页显示的卡片数量（PC端）
 let currentPage = 1;
@@ -197,14 +180,23 @@ let filteredData = [];
 let currentFilter = 'all';
 
 document.addEventListener('DOMContentLoaded', () => {
+    try {
+        const dataManager = new DataManager();
+        window.dataManager = dataManager; // 将实例存储在全局变量中以供其他函数使用
+        dataManager.initialize().catch(error => {
+            console.error('DataManager 初始化失败:', error);
+        });
+    } catch (error) {
+        console.error('创建 DataManager 实例失败:', error);
+    }
     // 根据设备类型设置每页显示的卡片数量
-    setDefaultItemsPerPage();
-    
+    setDefaultItemsPerPage();    
     fetchDataAndDisplay();
     setupEventListeners();
     setupItemsPerPageSelector();
     new BubbleEffect(); // 初始化气泡效果
 });
+document.getElementById('data-count').classList.add('loaded');
 
 function setDefaultItemsPerPage() {
     // 检测设备类型
