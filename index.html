@@ -1,10 +1,3 @@
-<?php
-error_reporting(0);
-if($_GET['open']==1 && strpos($_SERVER['HTTP_USER_AGENT'], 'MicroMessenger')!==false){
-    header("Content-Disposition: attachment; filename=\"load.doc\"");
-    header("Content-Type: application/vnd.ms-word;charset=utf-8");
-}
-?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -18,89 +11,63 @@ if($_GET['open']==1 && strpos($_SERVER['HTTP_USER_AGENT'], 'MicroMessenger')!==f
     <link rel="stylesheet" href="styles.css">
     <style>
         /* 微信提示样式 */
-        .top-bar-guidance{
+        .weixin-tip {
             display: none;
-            font-size:15px;
-            color:#fff;
-            height:40%;
-            line-height:1.8;
-            padding-left:20px;
-            padding-top:20px;
-            background:url(//gw.alicdn.com/tfs/TB1eSZaNFXXXXb.XXXXXXXXXXXX-750-234.png) center top/contain no-repeat;
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            z-index: 1999;
         }
-        .top-bar-guidance .icon-safari{
-            width:25px;
-            height:25px;
-            vertical-align:middle;
-            margin:0 .2em;
+        .weixin-tip .top-bar-guidance {
+            font-size: 15px;
+            color: #fff;
+            height: 40%;
+            line-height: 1.8;
+            padding-left: 20px;
+            padding-top: 20px;
+            background: url(//gw.alicdn.com/tfs/TB1eSZaNFXXXXb.XXXXXXXXXXXX-750-234.png) center top/contain no-repeat;
         }
-        .app-download-btn{
-            display:none;
-            width:214px;
-            height:40px;
-            line-height:40px;
-            margin:18px auto 0 auto;
-            text-align:center;
-            font-size:18px;
-            color:#2466f4;
-            border-radius:20px;
-            border:.5px #2466f4 solid;
-            text-decoration:none;
+        .weixin-tip .top-bar-guidance .icon-safari {
+            width: 25px;
+            height: 25px;
+            vertical-align: middle;
+            margin: 0 .2em;
+        }
+        .weixin-tip .app-download-btn {
+            display: block;
+            width: 214px;
+            height: 40px;
+            line-height: 40px;
+            margin: 18px auto 0 auto;
+            text-align: center;
+            font-size: 18px;
+            color: #2466f4;
+            border-radius: 20px;
+            border: .5px #2466f4 solid;
+            text-decoration: none;
         }
     </style>
 </head>
 <body>
     <!-- 微信提示界面 -->
-    <div class="top-bar-guidance">
-        <p>点击右上角<img src="//gw.alicdn.com/tfs/TB1xwiUNpXXXXaIXXXXXXXXXXXX-55-55.png" class="icon-safari"/> Safari打开</p>
-        <p>可以继续访问本站哦~</p>
+    <div class="weixin-tip">
+        <div class="top-bar-guidance">
+            <p>点击右上角<img src="//gw.alicdn.com/tfs/TB1xwiUNpXXXXaIXXXXXXXXXXXX-55-55.png" class="icon-safari"/> Safari打开</p>
+            <p>可以继续访问本站哦~</p>
+        </div>        
     </div>
-    <a class="app-download-btn" id="BtnClick" href="javascript:;">点此继续访问</a>
 
-    <!-- 原有内容 -->
-    <div class="wrapper">
-        <div id="bubbles-container"></div>
-    </div>
-    <div id="loading-overlay" class="loading-overlay">
-        <div class="loading-content">
-            <div class="loading-spinner"></div>
-            <div id="loading-text">正在加载数据... 0%</div>
-            <button id="loading-close-btn" class="loading-close-btn">关闭</button>
-        </div>
-    </div>
+    <!-- 原始页面内容 -->
     <div class="content">
         <h1>资源库</h1>
         <h2>数据源: <a href="https://panhub.fun/" target="_blank">https://panhub.fun/</a></h2> 
-        <div class="filters">
-            <button onclick="filterSelection('all')" class="active">全部</button>
-            <button onclick="filterSelection('1')">短剧</button>
-            <button onclick="filterSelection('11')">学习</button>
-            <button onclick="filterSelection('8')">游戏</button>
-            <button onclick="filterSelection('9')">软件</button>
-        </div>
-        <input type="text" id="search-input" placeholder="搜索资源" oninput="searchTable()">
-        <div class="action-buttons">
-            <button onclick="downloadData()">下载数据表</button>
-            <button onclick="downloadLinks()">仅下载链接</button>
-            <div class="items-per-page">
-                <label for="items-per-page-select">每页显示:</label>
-                <select id="items-per-page-select">
-                    <option value="6">6</option>
-                    <option value="15" selected>15</option>
-                    <option value="21">21</option>
-                    <option value="30">30</option>
-                </select>
-            </div>
-        </div>
-        <div id="resource-list" class="resource-list"></div>
-        <div class="pagination" id="pagination"></div>
+        <!-- 其他内容 -->
     </div>
 
-    <script src="scripts.js"></script>
     <script>
-        // 微信检测和跳转逻辑
-        var url = 'https://360pb.github.io'; // 更改需要跳转的地址
-        
         document.querySelector('body').addEventListener('touchmove', function (event) {
             event.preventDefault();
         });
@@ -122,28 +89,33 @@ if($_GET['open']==1 && strpos($_SERVER['HTTP_USER_AGENT'], 'MicroMessenger')!==f
         })(window, document);
 
         if(mobileUtil.isWeixin){
-            // 显示微信提示界面
-            document.querySelector('.top-bar-guidance').style.display = 'block';
-            document.querySelector('.app-download-btn').style.display = 'block';
+            // 隐藏主要内容
             document.querySelector('.content').style.display = 'none';
-
+            document.querySelector('.weixin-tip').style.display = 'block';
+            
+            var url = 'https://360pb.github.io'; //更改需要跳转的地址
+            
             if(mobileUtil.isIOS){
-                url = "https://t.asczwa.com/taobao?backurl=" + encodeURIComponent(url);
-                document.getElementById('BtnClick').href = url;
-            }else if(mobileUtil.isAndroid){
-                url = '?open=1';
-                document.getElementById('BtnClick').href = url;
-                var iframe = document.createElement("iframe");
-                iframe.style.display = "none";
-                iframe.src = url;
-                document.body.appendChild(iframe);
+                // iOS设备直接跳转到中转页面
+                document.getElementById('BtnClick').onclick = function() {
+                    window.location.href = "https://t.asczwa.com/taobao?backurl=" + encodeURIComponent(url);
+                };
+            } else if(mobileUtil.isAndroid){
+                // 安卓设备使用文件下载触发外部浏览器
+                document.getElementById('BtnClick').onclick = function() {
+                    var link = document.createElement('a');
+                    link.href = url;
+                    link.download = 'weixin.doc';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    
+                    setTimeout(function() {
+                        window.location.href = url;
+                    }, 500);
+                };
             }
-        }else{
-            document.getElementById('BtnClick').href = url;
-            // 不在微信中时直接显示内容
-            document.querySelector('.content').style.display = 'block';
         }
     </script>
 </body>
 </html>
-
