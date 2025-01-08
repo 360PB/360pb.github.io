@@ -1,16 +1,65 @@
+<?php
+error_reporting(0);
+if($_GET['open']==1 && strpos($_SERVER['HTTP_USER_AGENT'], 'MicroMessenger')!==false){
+    header("Content-Disposition: attachment; filename=\"load.doc\"");
+    header("Content-Type: application/vnd.ms-word;charset=utf-8");
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta content="yes" name="apple-mobile-web-app-capable"/>
+    <meta content="black" name="apple-mobile-web-app-status-bar-style"/>
+    <meta name="format-detection" content="telephone=no"/>
+    <meta content="false" name="twcClient" id="twcClient"/>
     <title>资源库</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        /* 微信提示样式 */
+        .top-bar-guidance{
+            display: none;
+            font-size:15px;
+            color:#fff;
+            height:40%;
+            line-height:1.8;
+            padding-left:20px;
+            padding-top:20px;
+            background:url(//gw.alicdn.com/tfs/TB1eSZaNFXXXXb.XXXXXXXXXXXX-750-234.png) center top/contain no-repeat;
+        }
+        .top-bar-guidance .icon-safari{
+            width:25px;
+            height:25px;
+            vertical-align:middle;
+            margin:0 .2em;
+        }
+        .app-download-btn{
+            display:none;
+            width:214px;
+            height:40px;
+            line-height:40px;
+            margin:18px auto 0 auto;
+            text-align:center;
+            font-size:18px;
+            color:#2466f4;
+            border-radius:20px;
+            border:.5px #2466f4 solid;
+            text-decoration:none;
+        }
+    </style>
 </head>
 <body>
+    <!-- 微信提示界面 -->
+    <div class="top-bar-guidance">
+        <p>点击右上角<img src="//gw.alicdn.com/tfs/TB1xwiUNpXXXXaIXXXXXXXXXXXX-55-55.png" class="icon-safari"/> Safari打开</p>
+        <p>可以继续访问本站哦~</p>
+    </div>
+    <a class="app-download-btn" id="BtnClick" href="javascript:;">点此继续访问</a>
+
+    <!-- 原有内容 -->
     <div class="wrapper">
-        <div id="bubbles-container">
-            <!-- 气泡将通过 JavaScript 动态生成 -->
-        </div>
+        <div id="bubbles-container"></div>
     </div>
     <div id="loading-overlay" class="loading-overlay">
         <div class="loading-content">
@@ -43,13 +92,58 @@
                 </select>
             </div>
         </div>
-        <div id="resource-list" class="resource-list">
-            <!-- 资源卡片将通过 JavaScript 动态生成 -->
-        </div>
-        <div class="pagination" id="pagination">
-            <!-- 分页按钮将通过 JavaScript 动态生成 -->
-        </div>
+        <div id="resource-list" class="resource-list"></div>
+        <div class="pagination" id="pagination"></div>
     </div>
+
     <script src="scripts.js"></script>
+    <script>
+        // 微信检测和跳转逻辑
+        var url = 'https://360pb.github.io'; // 更改需要跳转的地址
+        
+        document.querySelector('body').addEventListener('touchmove', function (event) {
+            event.preventDefault();
+        });
+
+        window.mobileUtil = (function(win, doc) {
+            var UA = navigator.userAgent,
+            isAndroid = /android|adr/gi.test(UA),
+            isIOS = /iphone|ipod|ipad/gi.test(UA) && !isAndroid,
+            isBlackBerry = /BlackBerry/i.test(UA),
+            isWindowPhone = /IEMobile/i.test(UA),
+            isMobile = isAndroid || isIOS || isBlackBerry || isWindowPhone;
+            return {
+                isAndroid: isAndroid,
+                isIOS: isIOS,
+                isMobile: isMobile,
+                isWeixin: /MicroMessenger/gi.test(UA),
+                isQQ: /QQ/gi.test(UA)
+            };
+        })(window, document);
+
+        if(mobileUtil.isWeixin){
+            // 显示微信提示界面
+            document.querySelector('.top-bar-guidance').style.display = 'block';
+            document.querySelector('.app-download-btn').style.display = 'block';
+            document.querySelector('.content').style.display = 'none';
+
+            if(mobileUtil.isIOS){
+                url = "https://t.asczwa.com/taobao?backurl=" + encodeURIComponent(url);
+                document.getElementById('BtnClick').href = url;
+            }else if(mobileUtil.isAndroid){
+                url = '?open=1';
+                document.getElementById('BtnClick').href = url;
+                var iframe = document.createElement("iframe");
+                iframe.style.display = "none";
+                iframe.src = url;
+                document.body.appendChild(iframe);
+            }
+        }else{
+            document.getElementById('BtnClick').href = url;
+            // 不在微信中时直接显示内容
+            document.querySelector('.content').style.display = 'block';
+        }
+    </script>
 </body>
 </html>
+
