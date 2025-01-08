@@ -16,17 +16,17 @@ class DataManager {
 
     showLoading() {
         if (this.loadingOverlay) {
-            this.loadingOverlay.classList.add('visible');
+             //this.loadingOverlay.classList.add('visible');
             this.loadingText.textContent = '正在加载数据...';
             this.dataCountDisplay.textContent = '已加载数据：0';
         }
     }
 
-     //hideLoading() {
-     //    if (this.loadingOverlay) {
-     //        this.loadingOverlay.classList.remove('visible');
-     //    }
-     //}
+    hideLoading() {
+        if (this.loadingOverlay) {
+            this.loadingOverlay.classList.remove('visible');
+        }
+    }
 
     updateLoadingStatus(message) {
         if (this.loadingText) {
