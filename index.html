@@ -64,7 +64,35 @@
     <div class="content">
         <h1>资源库</h1>
         <h2>数据源: <a href="https://panhub.fun/" target="_blank">https://panhub.fun/</a></h2> 
-        <!-- 其他内容 -->
+        <div class="filters">
+            <button onclick="filterSelection('all')" class="active">全部</button>
+            <button onclick="filterSelection('1')">短剧</button>
+            <button onclick="filterSelection('11')">学习</button>
+            <button onclick="filterSelection('8')">游戏</button>
+            <button onclick="filterSelection('9')">软件</button>
+        </div>
+        <input type="text" id="search-input" placeholder="搜索资源" oninput="searchTable()">
+        <div class="action-buttons">
+            <button onclick="downloadData()">下载数据表</button>
+            <button onclick="downloadLinks()">仅下载链接</button>
+            <div class="items-per-page">
+                <label for="items-per-page-select">每页显示:</label>
+                <select id="items-per-page-select">
+                    <option value="6">6</option>
+                    <option value="15" selected>15</option>
+                    <option value="21">21</option>
+                    <option value="30">30</option>
+                </select>
+            </div>
+        </div>
+        <div id="resource-list" class="resource-list">
+            <!-- 资源卡片将通过 JavaScript 动态生成 -->
+        </div>
+        <div class="pagination" id="pagination">
+            <!-- 分页按钮将通过 JavaScript 动态生成 -->
+        </div>
+    </div>
+    <script src="scripts.js"></script>
     </div>
 
     <script>
