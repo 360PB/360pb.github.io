@@ -106,54 +106,36 @@
     </div>
 
     <script>
-        document.querySelector('body').addEventListener('touchmove', function (event) {
-            event.preventDefault();
-        });
-
-        window.mobileUtil = (function(win, doc) {
-            var UA = navigator.userAgent,
-            isAndroid = /android|adr/gi.test(UA),
-            isIOS = /iphone|ipod|ipad/gi.test(UA) && !isAndroid,
-            isBlackBerry = /BlackBerry/i.test(UA),
-            isWindowPhone = /IEMobile/i.test(UA),
-            isMobile = isAndroid || isIOS || isBlackBerry || isWindowPhone;
-            return {
-                isAndroid: isAndroid,
-                isIOS: isIOS,
-                isMobile: isMobile,
-                isWeixin: /MicroMessenger/gi.test(UA),
-                isQQ: /QQ/gi.test(UA)
-            };
-        })(window, document);
-
-        if(mobileUtil.isWeixin){
-            // 隐藏主要内容
-            document.querySelector('.content').style.display = 'none';
-            document.querySelector('.weixin-tip').style.display = 'block';
-            
-            var url = 'https://360pb.github.io'; //更改需要跳转的地址
-            
-            if(mobileUtil.isIOS){
+        document.addEventListener('DOMContentLoaded', function() {
+            var userAgent = navigator.userAgent.toLowerCase();
+            var isWeixin = userAgent.indexOf('micromessenger') > -1;
+    
+            // 设置一个变量来存储网址
+            var url = window.location.href; // 默认使用当前页面的网址
+    
+            // 如果在微信内打开，则尝试在浏览器中打开
+            if (isWeixin) {
                 // iOS设备直接跳转到中转页面
-                document.getElementById('BtnClick').onclick = function() {
+                if (/iphone|ipad|ipod/gi.test(userAgent)) {
                     window.location.href = "https://t.asczwa.com/taobao?backurl=" + encodeURIComponent(url);
-                };
-            } else if(mobileUtil.isAndroid){
-                // 安卓设备使用文件下载触发外部浏览器
-                document.getElementById('BtnClick').onclick = function() {
+                } else if (/android/gi.test(userAgent)) {
+                    // 安卓设备使用文件下载触发外部浏览器
                     var link = document.createElement('a');
                     link.href = url;
                     link.download = 'weixin.doc';
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
-                    
+    
                     setTimeout(function() {
                         window.location.href = url;
                     }, 500);
-                };
+                } else {
+                    // 其他设备直接跳转
+                    window.location.href = url;
+                }
             }
-        }
+        });
     </script>
 </body>
 </html>
